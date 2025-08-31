@@ -1,0 +1,26 @@
+<x-app-layout>
+    <x-slot name="header">
+        <h2>Tambah Category</h2>
+    </x-slot>
+
+    <div class="py-12">
+        <div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
+            <div class="bg-white shadow p-6 rounded-lg">
+
+                <form action="{{ route('categories.store') }}" method="POST">
+                    @csrf
+                    <div class="mb-4">
+                        <label>Nama</label>
+                        <input type="text" name="name" class="w-full border px-3 py-2" value="{{ old('name') }}" required>
+                    </div>
+                    <div class="mb-4">
+                        <label>Deskripsi</label>
+                        <textarea name="description" class="w-full border px-3 py-2">{{ old('description') }}</textarea>
+                    </div>
+                    <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
+                </form>
+
+            </div>
+        </div>
+    </div>
+</x-app-layout>
