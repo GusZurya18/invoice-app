@@ -33,6 +33,17 @@
                     <input type="number" id="discount" name="discount_percent" class="w-full border p-2" value="0" min="0" max="100">
                 </div>
 
+                <div class="mb-4">
+                    <label>Start Date</label>
+                    <input type="date" name="start_date" class="w-full border p-2">
+                </div>
+
+                <div class="mb-4">
+                    <label>Due Date</label>
+                    <input type="date" name="due_date" class="w-full border p-2">
+                </div>
+
+
                 <h3>Item</h3>
                 <table class="w-full mb-4 border" id="items-table">
                     <thead class="bg-gray-100">

@@ -38,6 +38,9 @@
 <th class="border p-2">Status</th>
 <th class="border p-2">Total</th>
 <th class="border p-2">Diskon (%)</th>
+<th class="border p-2">Start Date</th>
+<th class="border p-2">Due Date</th>
+<th class="border p-2">Paid Status</th>
 <th class="border p-2">Aksi</th>
 </tr>
 </thead>
@@ -49,6 +52,19 @@
 <td class="border p-2">{{ ucfirst($inv->status) }}</td>
 <td class="border p-2">Rp {{ number_format($inv->total_amount,2) }}</td>
 <td class="border p-2">{{ $inv->discount_percent }}</td>
+
+ <td class="border p-2">{{ $inv->start_date ? $inv->start_date->toDateString() : '-' }}</td>
+    <td class="border p-2">{{ $inv->due_date ? $inv->due_date->toDateString() : '-' }}</td>
+    <td class="border p-2">
+        @if($inv->paid_status === 'done')
+            <span class="text-green-600 font-bold">Done</span>
+        @elseif($inv->due_date && now()->gt($inv->due_date))
+            <span class="text-red-600 font-bold">Overdue</span>
+        @else
+            <span class="text-yellow-600 font-bold">Pending</span>
+        @endif
+    </td>
+
 <td class="border p-2 space-x-2">
 <a href="{{ route('invoices.edit', $inv) }}" class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</a>
 <form action="{{ route('invoices.destroy',$inv) }}" method="POST" class="inline">

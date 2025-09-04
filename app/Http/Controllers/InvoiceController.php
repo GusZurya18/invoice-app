@@ -17,7 +17,8 @@ class InvoiceController extends Controller
 
         $totalInvoices = Invoice::count();
         $paidInvoices = Invoice::where('status', 'paid')->count();
-        $unpaidInvoices = Invoice::where('status', 'draft')->count();
+        $unpaidInvoices = Invoice::where('status', 'draft')
+        ->orWhere('paid_status','overdue')->count();
         $pendingInvoices = Invoice::where('status', 'pending')->count();
 
         return view('invoices.index', compact(
@@ -42,7 +43,9 @@ class InvoiceController extends Controller
             'items'=>'required|array',
             'items.*.product_id'=>'required|exists:products,id',
             'items.*.quantity'=>'required|numeric|min:1',
-            'discount_percent'=>'nullable|numeric|min:0|max:100'
+            'discount_percent'=>'nullable|numeric|min:0|max:100',
+            'start_date' => 'nullable|date',
+            'due_date' => 'nullable|date|after_or_equal:start_date',
         ]);
 
         DB::transaction(function () use ($request) {
@@ -52,7 +55,10 @@ class InvoiceController extends Controller
                 'status'=>$request->status,
                 'notes'=>$request->notes,
                 'discount_percent'=>$request->discount_percent ?? 0,
-                'payment_proof'=>$request->hasFile('payment_proof') ? $request->file('payment_proof')->store('payments','public') : null
+                'payment_proof'=>$request->hasFile('payment_proof') ? $request->file('payment_proof')->store('payments','public') : null,
+                'start_date' => $request->start_date,
+                'due_date'   => $request->due_date,
+                'paid_status'=> 'pending',
             ]);
 
             foreach($request->items as $item){
@@ -118,7 +124,10 @@ class InvoiceController extends Controller
                 'status'=>$request->status,
                 'notes'=>$request->notes,
                 'discount_percent'=>$request->discount_percent ?? 0,
-                'payment_proof'=>$request->hasFile('payment_proof') ? $request->file('payment_proof')->store('payments','public') : $invoice->payment_proof
+                'payment_proof'=>$request->hasFile('payment_proof') ? $request->file('payment_proof')->store('payments','public') : $invoice->payment_proof,
+                'start_date' => $request->start_date,
+                'due_date'   => $request->due_date,
+                'paid_status'=> $request->status === 'paid' ? 'done' : 'pending',
             ]);
 
             $invoice->items()->delete();

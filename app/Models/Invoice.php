@@ -8,8 +8,24 @@ class Invoice extends Model
     use HasFactory;
 
     protected $fillable = [
-        'code','customer_id','status','notes','payment_proof','discount_percent'
+    'code','customer_id','status','notes','discount_percent','payment_proof',
+    'start_date','due_date','paid_status',
     ];
+
+    protected $casts = [
+    'start_date' => 'date',
+    'due_date'   => 'date',
+    ];
+
+    protected static function booted()
+    {
+    static::retrieved(function ($invoice) {
+        if ($invoice->due_date && now()->gt($invoice->due_date) && $invoice->paid_status !== 'done') {
+            $invoice->paid_status = 'overdue';
+            $invoice->save();
+        }
+    });
+    }
 
     public function customer() {
         return $this->belongsTo(Customer::class);

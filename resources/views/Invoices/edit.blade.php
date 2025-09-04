@@ -33,6 +33,27 @@
 <input type="number" name="discount_percent" class="w-full border p-2" value="{{ $invoice->discount_percent }}" min="0" max="100">
 </div>
 
+<div class="mb-4">
+    <label>Start Date</label>
+    <input type="date" name="start_date" class="w-full border p-2"
+        value="{{ $invoice->start_date ? $invoice->start_date->format('Y-m-d') : '' }}">
+</div>
+
+<div class="mb-4">
+    <label>Due Date</label>
+    <input type="date" name="due_date" class="w-full border p-2"
+        value="{{ $invoice->due_date ? $invoice->due_date->format('Y-m-d') : '' }}">
+</div>
+
+<div class="mb-4">
+    <label>Paid Status</label>
+    <select name="paid_status" class="w-full border p-2">
+        <option value="pending" {{ $invoice->paid_status === 'pending' ? 'selected' : '' }}>Pending</option>
+        <option value="done" {{ $invoice->paid_status === 'done' ? 'selected' : '' }}>Done</option>
+    </select>
+</div>
+
+
 <h3>Item</h3>
 <table class="w-full mb-4 border" id="items-table">
 <thead class="bg-gray-100">

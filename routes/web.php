@@ -1,20 +1,20 @@
 <?php
 
+use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\InvoiceController;
-use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\CustomerController;
 use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DashboardController;
+use Illuminate\Support\Facades\Route;
 
-// Halaman welcome
-Route::get('/', function () {
-    return view('welcome');
-});
-
-
-
+/*
+|--------------------------------------------------------------------------
+| Public Routes (Guest)
+|--------------------------------------------------------------------------
+| Hanya bisa diakses user yang belum login
+*/
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
@@ -27,42 +27,58 @@ Route::get('/contact', function () {
     return view('contact');
 })->name('contact');
 
-// Dashboard
-Route::get('/dashboard', function () {
-    $invoices = \App\Models\Invoice::latest()->get(); // semua invoice
-    return view('dashboard', compact('invoices'));
-})->middleware(['auth', 'verified'])->name('dashboard');
 
-Route::get('/dashboard', [DashboardController::class, 'index'])
-    ->middleware(['auth'])
-    ->name('dashboard');
+/*
+|--------------------------------------------------------------------------
+| Admin Routes
+|--------------------------------------------------------------------------
+| Semua route untuk admin (prefix /admin)
+| Hanya bisa diakses oleh user dengan role "admin"
+*/
+Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
+    Route::get('/dashboard', function () {
+        return view('admin.dashboard');
+    })->name('dashboard');
 
-// Auth routes Profile
-Route::middleware('auth')->group(function () {
+    Route::resource('users', UserController::class);
+});
+
+
+/*
+|--------------------------------------------------------------------------
+| User Routes
+|--------------------------------------------------------------------------
+| Hanya bisa diakses user biasa (role = user)
+| Bisa juga admin masuk sini kalau perlu
+*/
+
+Route::middleware(['auth','isUser'])->group(function () {
+    // Dashboard user
+    Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
+    // Profil
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Route CRUD Invoice
+    // Invoice
     Route::resource('invoices', InvoiceController::class);
+    Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
 
-    // Route cetak PDF invoice
-    Route::get('invoices/{invoice}/pdf', [InvoiceController::class,'pdf'])->name('invoices.pdf');
-});
-
-Route::middleware(['auth'])->group(function () {
+    // Customer
     Route::resource('customers', CustomerController::class);
+
+    // Category
+    Route::resource('categories', CategoryController::class);
+
+    // Product
+    Route::resource('products', ProductController::class);
 });
 
-Route::resource('categories', CategoryController::class)->middleware('auth');
 
-
-Route::resource('products', ProductController::class)->middleware('auth');
-
-Route::get('invoices/{invoice}/pdf', [InvoiceController::class,'pdf'])->name('invoices.pdf');
-
-Route::resource('invoices', InvoiceController::class);
-Route::get('invoices/{invoice}/pdf', [InvoiceController::class,'pdf'])->name('invoices.pdf');
-
-
+/*
+|--------------------------------------------------------------------------
+| Auth Routes (Laravel Breeze/Fortify/Jetstream)
+|--------------------------------------------------------------------------
+*/
 require __DIR__.'/auth.php';
