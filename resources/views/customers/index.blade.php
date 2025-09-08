@@ -35,6 +35,8 @@
                             <th class="border px-4 py-2">Email</th>
                             <th class="border px-4 py-2">Phone</th>
                             <th class="border px-4 py-2">Alamat</th>
+                            <th class="border px-4 py-2">Status</th>
+                            <th class="border px-4 py-2">Total Orders</th>
                             <th class="border px-4 py-2">Aksi</th>
                         </tr>
                     </thead>
@@ -45,6 +47,9 @@
                             <td class="border px-4 py-2">{{ $customer->email }}</td>
                             <td class="border px-4 py-2">{{ $customer->phone }}</td>
                             <td class="border px-4 py-2">{{ $customer->address }}</td>
+                            <td>{{ ucfirst($customer->status) }}</td>
+                            <td>{{ $customer->orders_count }} Orders</td>
+
                             <td class="border px-4 py-2">
                                 <a href="{{ route('customers.edit', $customer) }}" class="text-blue-500">Edit</a> | 
                                 <form action="{{ route('customers.destroy', $customer) }}" method="POST" class="inline">

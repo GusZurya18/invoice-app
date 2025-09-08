@@ -79,6 +79,12 @@
                 </div>
 
                 <div class="mb-4">
+                    <label>Catatan</label>
+                        <textarea name="notes" class="w-full border p-2" rows="3" placeholder="Tambahkan catatan untuk invoice..."></textarea>
+                </div>
+
+
+                <div class="mb-4">
                     <strong>Total: <span id="grand-total">0</span></strong>
                 </div>
 

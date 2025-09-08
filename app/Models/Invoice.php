@@ -9,7 +9,7 @@ class Invoice extends Model
 
     protected $fillable = [
     'code','customer_id','status','notes','discount_percent','payment_proof',
-    'start_date','due_date','paid_status',
+    'start_date','due_date','paid_status','total_amount'
     ];
 
     protected $casts = [
@@ -35,10 +35,11 @@ class Invoice extends Model
         return $this->hasMany(InvoiceItem::class);
     }
 
-    public function getTotalAmountAttribute() {
+    public function getCalculatedTotalAttribute() {
         $total = $this->items->sum('total');
         return $total - ($total * $this->discount_percent / 100);
     }
+
 }
 
 

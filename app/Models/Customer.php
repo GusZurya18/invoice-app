@@ -14,10 +14,17 @@ class Customer extends Model
         'email',
         'phone',
         'address',
+        'status'
     ];
 
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
     }
+
+    public function getOrdersCountAttribute()
+    {
+        return $this->invoices()->count();
+    }
+    
 }

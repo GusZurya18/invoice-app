@@ -37,6 +37,7 @@ class CustomerController extends Controller
             'email' => 'required|email|unique:customers',
             'phone' => 'nullable',
             'address' => 'nullable',
+            'status' => 'required|in:active,inactive',
         ]);
 
         Customer::create($request->all());

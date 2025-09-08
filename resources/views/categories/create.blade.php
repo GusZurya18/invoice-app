@@ -17,6 +17,15 @@
                         <label>Deskripsi</label>
                         <textarea name="description" class="w-full border px-3 py-2">{{ old('description') }}</textarea>
                     </div>
+
+                    <div class="mb-4">
+                        <label for="status" class="block font-semibold">Status</label>
+                        <select name="status" id="status" class="w-full border rounded p-2">
+                            <option value="active" {{ old('status', $category->status ?? '') == 'active' ? 'selected' : '' }}>Active</option>
+                            <option value="inactive" {{ old('status', $category->status ?? '') == 'inactive' ? 'selected' : '' }}>Inactive</option>
+                        </select>
+                    </div>
+
                     <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
                 </form>
 

@@ -121,7 +121,7 @@
                 </tr>
                 <tr>
                     <td colspan="3"><strong>Grand Total</strong></td>
-                    <td>{{ number_format($invoice->total_amount - ($invoice->total_amount * ($invoice->discount_percent ?? 0)/100),2) }}</td>
+                    <td>{{ number_format($invoice->total_amount, 2) }}</td>
                 </tr>
             </tbody>
         </table>
@@ -133,5 +133,14 @@
         </div>
         @endif
     </div>
+
+    @if($invoice->notes)
+    <div style="margin-top:20px; padding:10px; background:#f8f9fa; border-radius:5px;">
+        <p style="margin:0; font-weight:bold;">Catatan:</p>
+        <p style="margin:5px 0 0 0;">{{ $invoice->notes }}</p>
+    </div>
+    @endif
+
+
 </body>
 </html>
