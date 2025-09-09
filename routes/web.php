@@ -43,6 +43,14 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     Route::resource('users', UserController::class);
 });
 
+Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
+});
+
+Route::prefix('admin')->middleware(['auth'])->group(function () {
+    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
+    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+});
 
 /*
 |--------------------------------------------------------------------------
