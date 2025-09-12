@@ -21,6 +21,7 @@
                     <th class="p-3">ID</th>
                     <th class="p-3">Nama</th>
                     <th class="p-3">Email</th>
+                    <th class="p-3">Role</th>
                     <th class="p-3">Aksi</th>
                 </tr>
             </thead>
@@ -30,6 +31,7 @@
                     <td class="p-3">{{ $user->id }}</td>
                     <td class="p-3">{{ $user->name }}</td>
                     <td class="p-3">{{ $user->email }}</td>
+                    <td class="p-3">{{ ucfirst($user->role) }}</td>
                     <td class="p-3">
                         <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" onsubmit="return confirm('Yakin hapus user ini?')">
                             @csrf

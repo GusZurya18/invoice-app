@@ -46,11 +46,19 @@
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <div class="bg-white p-6 rounded shadow mt-6">
+        <h2 class="text-lg font-bold mb-4">Penjualan Berdasarkan Kategori</h2>
+        <canvas id="categoryChart" width="400" height="200"></canvas>
+
+    </div>
+
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
 <script>
+    // Chart Penjualan (Doughnut)
     const ctxSales = document.getElementById('salesChart').getContext('2d');
     new Chart(ctxSales, {
-        type: 'doughnut', // bentuk lingkaran
+        type: 'doughnut',
         data: {
             labels: @json($labels),
             datasets: [{
@@ -79,30 +87,53 @@
             }
         }
     });
+
+    // Chart Produk Terlaris (Bar)
+    const ctxTopProducts = document.getElementById('topProductsChart').getContext('2d');
+    new Chart(ctxTopProducts, {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($topProducts->pluck('product_name')) !!},
+            datasets: [{
+                label: 'Total Terjual',
+                data: {!! json_encode($topProducts->pluck('total_sold')) !!},
+                backgroundColor: 'rgba(59, 130, 246, 0.7)',
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: {
+                y: { beginAtZero: true }
+            }
+        }
+    });
+
+    // Chart Kategori (Bar)
+    const ctxCategory = document.getElementById('categoryChart').getContext('2d');
+    new Chart(ctxCategory, {
+        type: 'bar',
+        data: {
+            labels: {!! json_encode($categorySales->pluck('category')) !!},
+            datasets: [{
+                label: 'Total Terjual',
+                data: {!! json_encode($categorySales->pluck('total_sold')->map(fn($v) => (int) $v)) !!},
+                backgroundColor: [
+                    'rgba(54, 162, 235, 0.6)',
+                    'rgba(255, 99, 132, 0.6)',
+                    'rgba(75, 192, 192, 0.6)',
+                    'rgba(255, 206, 86, 0.6)',
+                ],
+                borderColor: 'rgba(0, 0, 0, 0.1)',
+                borderWidth: 1
+            }]
+        },
+        options: {
+            responsive: true,
+            scales: { y: { beginAtZero: true } }
+        }
+    });
 </script>
 
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <script>
-        const ctx = document.getElementById('topProductsChart').getContext('2d');
-        const chart = new Chart(ctx, {
-            type: 'bar',
-            data: {
-                labels: {!! json_encode($topProducts->pluck('product_name')) !!},
-                datasets: [{
-                    label: 'Total Terjual',
-                    data: {!! json_encode($topProducts->pluck('total_sold')) !!},
-                    backgroundColor: 'rgba(59, 130, 246, 0.7)',
-                }]
-            },
-            options: {
-                responsive: true,
-                scales: {
-                    y: { beginAtZero: true }
-                }
-            }
-        });
-    </script>
 </x-app-layout>
 
 
