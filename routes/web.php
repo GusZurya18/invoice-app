@@ -8,6 +8,10 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\TaskController as AdminTaskController;
+use App\Http\Controllers\User\TaskController as UserTaskController;
+use App\Http\Controllers\TaskFileController;
+use App\Http\Controllers\TaskCommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -52,6 +56,30 @@ Route::prefix('admin')->middleware(['auth'])->group(function () {
     Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
 });
 
+// Admin Task Routes
+Route::middleware(['auth','isAdmin'])->prefix('admin')->name('admin.')->group(function(){
+    Route::resource('tasks', AdminTaskController::class);
+    
+    // Admin juga bisa upload file dan comment
+    Route::post('tasks/{task}/files', [TaskFileController::class,'store'])->name('tasks.files.store');
+    Route::delete('tasks/files/{file}', [TaskFileController::class,'destroy'])->name('tasks.files.destroy');
+    Route::post('tasks/{task}/comments', [TaskCommentController::class,'store'])->name('tasks.comments.store');
+    Route::delete('tasks/comments/{comment}', [TaskCommentController::class,'destroy'])->name('tasks.comments.destroy');
+});
+
+// User Task Routes
+Route::middleware('auth')->group(function(){
+    Route::get('my-tasks', [UserTaskController::class,'index'])->name('tasks.my');
+    Route::get('tasks/{task}', [UserTaskController::class,'show'])->name('tasks.show');
+    Route::post('tasks/{task}/status', [UserTaskController::class,'updateStatus'])->name('tasks.update.status');
+
+    Route::post('tasks/{task}/files', [TaskFileController::class,'store'])->name('tasks.files.store');
+    Route::delete('tasks/files/{file}', [TaskFileController::class,'destroy'])->name('tasks.files.destroy');
+
+    Route::post('tasks/{task}/comments', [TaskCommentController::class,'store'])->name('tasks.comments.store');
+    Route::delete('tasks/comments/{comment}', [TaskCommentController::class,'destroy'])->name('tasks.comments.destroy');
+});
+
 /*
 |--------------------------------------------------------------------------
 | User Routes
@@ -72,6 +100,7 @@ Route::middleware(['auth','isUser'])->group(function () {
     // Invoice
     Route::resource('invoices', InvoiceController::class);
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
+    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
 
     // Customer
     Route::resource('customers', CustomerController::class);

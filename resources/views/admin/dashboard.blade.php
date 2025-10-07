@@ -5,7 +5,7 @@
 
     {{-- Header --}}
     <div>
-        <h1 class="text-2xl font-bold text-gray-800">Selamat Datang, Admin! 👋</h1>
+        <h1 class="text-2xl font-bold text-gray-800">Selamat Datang,{{ $adminName }}👋</h1>
         <p class="text-gray-600 mt-1">Berikut ringkasan statistik sistem Anda.</p>
     </div>
 

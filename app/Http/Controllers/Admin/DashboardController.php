@@ -9,12 +9,16 @@ use App\Models\Invoice;
 use App\Models\Customer;
 use App\Models\User;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
 
 class DashboardController extends Controller
 {
     public function index()
     {
+        //Ambil Data Admin
+        $currentAdmin = Auth::user();
+        $adminName = $currentAdmin->name ?? 'Admin';
         // Total Statistik Existing
         $totalUsers      = User::count();
         $totalProducts   = Product::count();
@@ -25,7 +29,7 @@ class DashboardController extends Controller
         $paidInvoices    = Invoice::where('status', 'paid')->count();
         $unpaidInvoices  = Invoice::where('status', 'unpaid')->count();
 
-        // 🔥 METRICS BARU
+        //  METRICS BARU
         
         // 1. Total Revenue (semua invoice paid)
         $totalRevenue = Invoice::where('status', 'paid')->sum('total_amount');
@@ -118,13 +122,18 @@ class DashboardController extends Controller
             'topProducts',
             'categorySales',
             
-            // 🔥 New metrics
+            //  New metrics
             'totalRevenue',
             'totalExpense',
             'netProfit',
             'paymentCollectionRate',
             'totalRevenueYTD',
-            'totalRevenueYTDAfterTax'
+            'totalRevenueYTDAfterTax',
+
+            // Admin Data
+            'currentAdmin',
+            'adminName'
+
         ));
     }
 }

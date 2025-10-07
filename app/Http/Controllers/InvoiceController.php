@@ -36,6 +36,10 @@ class InvoiceController extends Controller
         return view('invoices.create', compact('customers','products'));
     }
 
+    public function show(Invoice $invoice) {
+    return view('invoices.show', compact('invoice'));
+}
+
 public function store(Request $request) {
     $request->validate([
         'customer_id'=>'required|exists:customers,id',

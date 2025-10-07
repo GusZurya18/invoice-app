@@ -66,6 +66,7 @@
     </td>
 
 <td class="border p-2 space-x-2">
+<a href="{{ route('invoices.show', $inv) }}" class="bg-blue-500 text-white px-2 py-1 rounded">Lihat</a>
 <a href="{{ route('invoices.edit', $inv) }}" class="bg-yellow-500 text-white px-2 py-1 rounded">Edit</a>
 <form action="{{ route('invoices.destroy',$inv) }}" method="POST" class="inline">
 @csrf @method('DELETE')
