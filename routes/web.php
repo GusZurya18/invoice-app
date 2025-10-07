@@ -70,8 +70,13 @@ Route::middleware(['auth','isUser'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Invoice
+     Route::delete('/invoices/bulk-delete', [InvoiceController::class, 'bulkDelete'])->name('invoices.bulk-delete');
     Route::resource('invoices', InvoiceController::class);
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
+    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+ 
+
+
 
     // Customer
     Route::resource('customers', CustomerController::class);

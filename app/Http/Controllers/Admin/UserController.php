@@ -8,9 +8,17 @@ use Illuminate\Http\Request;
 
 class UserController extends Controller
 {
-    public function index()
+    public function index(Request $request)
     {
-        $users = User::latest()->paginate(10); // <--- penting pakai paginate
+        $query = User::query();
+        
+        // Filter berdasarkan role jika ada parameter
+        if ($request->has('role') && $request->role != null) {
+            $query->where('role', $request->role);
+        }
+        
+        $users = $query->latest()->paginate(25); // Ubah dari 10 menjadi 25 sesuai kebutuhan
+        
         return view('admin.users.index', compact('users'));
     }
 
@@ -34,7 +42,7 @@ class UserController extends Controller
             'role' => $request->role ?? 'user',
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User berhasil ditambahkan');
+        return redirect()->route('admin.users.index')->with('success', 'User berhasil ditambahkan');
     }
 
     public function edit(User $user)
@@ -55,12 +63,12 @@ class UserController extends Controller
             'role' => $request->role ?? $user->role,
         ]);
 
-        return redirect()->route('users.index')->with('success', 'User berhasil diperbarui');
+        return redirect()->route('admin.users.index')->with('success', 'User berhasil diperbarui');
     }
 
     public function destroy(User $user)
     {
         $user->delete();
-        return redirect()->route('users.index')->with('success', 'User berhasil dihapus');
+        return redirect()->route('admin.users.index')->with('success', 'User berhasil dihapus');
     }
 }

@@ -37,6 +37,17 @@ class DashboardController extends Controller
         $labels = $sales->map(fn($s) => $s->product?->name ?? 'Unknown');
         $data   = $sales->pluck('total_qty');
 
+        //Data untuk chart penjualan category terbanyak
+        $categorySales = InvoiceItem::selectRaw('categories.name as category, SUM(invoice_items.quantity) as total_sold')
+        ->join('products', 'invoice_items.product_id', '=', 'products.id')
+        ->join('categories', 'products.category_id', '=', 'categories.id')
+        ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
+        ->where('invoices.status', 'paid') // hitung hanya invoice yang sudah dibayar
+        ->groupBy('categories.name')
+        ->orderByDesc('total_sold')
+        ->limit(5)
+        ->get();
+
         return view('dashboard', compact(
             'user',
             'totalProducts',
@@ -46,7 +57,8 @@ class DashboardController extends Controller
             'totalPendapatan',
             'topProducts',
             'labels',
-            'data'
+            'data',
+            'categorySales'
         ));
     }
 }

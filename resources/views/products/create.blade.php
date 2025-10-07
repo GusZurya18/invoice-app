@@ -1,59 +1,158 @@
-<x-app-layout>
-<x-slot name="header">
-<h2>Tambah Product</h2>
-</x-slot>
+{{-- resources/views/products/create.blade.php --}}
+@extends('layouts.master')
 
-<div class="py-12">
-<div class="max-w-2xl mx-auto sm:px-6 lg:px-8">
-<div class="bg-white shadow p-6 rounded-lg">
+@section('title', 'Create Product')
 
-    <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data">
-        @csrf
-        <div class="mb-4">
-            <label>Nama Product</label>
-            <input type="text" name="name" class="w-full border px-3 py-2" value="{{ old('name') }}" required>
+@section('page-title', 'Create New Product')
+
+@section('content')
+
+<div class="bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 min-h-screen flex items-center justify-center py-12 px-4">
+    <div class="w-full max-w-2xl bg-white rounded-2xl shadow-xl p-8">
+        {{-- Back Button --}}
+        <div class="mb-6">
+            <a href="{{ route('products.index') }}" class="inline-flex items-center text-gray-600 hover:text-gray-900 text-sm">
+                <svg class="w-5 h-5 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
+                </svg>
+                Back
+            </a>
         </div>
 
-        <div class="mb-4">
-            <label>Deskripsi</label>
-            <textarea name="description" class="w-full border px-3 py-2">{{ old('description') }}</textarea>
-        </div>
+        {{-- Title --}}
+        <h2 class="text-2xl font-bold text-purple-700 text-center mb-8">Add New Product</h2>
 
-        <div class="mb-4">
-            <label>Category</label>
-            <select name="category_id" class="w-full border px-3 py-2" required>
-                <option value="">-- Pilih Category --</option>
-                @foreach($categories as $cat)
-                    <option value="{{ $cat->id }}" {{ old('category_id')==$cat->id?'selected':'' }}>{{ $cat->name }}</option>
-                @endforeach
-            </select>
-        </div>
-
-        <div class="mb-4">
-            <label>Harga Satuan</label>
-            <input type="number" name="price" step="0.01" class="w-full border px-3 py-2" value="{{ old('price') }}" required>
-        </div>
-
-        <div class="mb-4">
-            <label for="stock" class="form-label">Stok</label>
-            <input type="number" name="stock" id="stock" value="{{ old('stock', $product->stock ?? 0) }}" class="form-control" required>
-        </div>
-
-
-        <div class="mb-4">
-            <label>Foto Product</label>
-            <div id="drop-area" class="border-dashed border-2 border-gray-400 p-6 text-center cursor-pointer">
-                <p>Drag & Drop foto di sini atau klik untuk pilih file</p>
-                <input type="file" name="photo" id="fileElem" accept="image/*" class="hidden">
-                <img id="preview" class="mx-auto mt-4 max-h-48 hidden">
+        {{-- Success Message --}}
+        @if(session('success'))
+            <div class="mb-6 rounded-lg bg-green-50 border border-green-200 text-green-600 px-4 py-3 text-sm">
+                {{ session('success') }}
             </div>
-        </div>
+        @endif
 
-        <button type="submit" class="bg-blue-500 text-white px-4 py-2 rounded">Simpan</button>
-    </form>
+        {{-- Error Message --}}
+        @if($errors->any())
+            <div class="mb-6 rounded-lg bg-red-50 border border-red-200 text-red-600 px-4 py-3 text-sm">
+                <ul class="list-disc list-inside">
+                    @foreach($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
+            </div>
+        @endif
 
-</div>
-</div>
+        {{-- Form --}}
+        <form action="{{ route('products.store') }}" method="POST" enctype="multipart/form-data" id="productForm" class="space-y-6">
+            @csrf
+
+            {{-- Product Name --}}
+            <div>
+                <label for="name" class="block text-sm font-semibold text-gray-700 mb-2">
+                    Product Name <span class="text-red-500">*</span>
+                </label>
+                <input type="text" id="name" name="name" required
+                       value="{{ old('name') }}"
+                       class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+                       placeholder="Enter Product Name">
+                @error('name')
+                <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Description --}}
+            <div>
+                <label for="description" class="block text-sm font-semibold text-gray-700 mb-2">
+                    Product Description
+                </label>
+                <textarea id="description" name="description" rows="3"
+                          class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none resize-none transition"
+                          placeholder="Enter Product Description">{{ old('description') }}</textarea>
+                @error('description')
+                <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Category --}}
+            <div>
+                <label for="category_id" class="block text-sm font-semibold text-gray-700 mb-2">
+                    Category <span class="text-red-500">*</span>
+                </label>
+                <select id="category_id" name="category_id" required
+                        class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition">
+                    <option value="">-- Select Category --</option>
+                    @foreach($categories as $cat)
+                        <option value="{{ $cat->id }}" {{ old('category_id') == $cat->id ? 'selected' : '' }}>
+                            {{ $cat->name }}
+                        </option>
+                    @endforeach
+                </select>
+                @error('category_id')
+                <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Price and Stock in Grid --}}
+            <div class="grid grid-cols-2 gap-4">
+                {{-- Price --}}
+                <div>
+                    <label for="price" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Unit Price <span class="text-red-500">*</span>
+                    </label>
+                    <input type="number" id="price" name="price" step="0.01" required
+                           value="{{ old('price') }}"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+                           placeholder="0.00">
+                    @error('price')
+                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+
+                {{-- Stock --}}
+                <div>
+                    <label for="stock" class="block text-sm font-semibold text-gray-700 mb-2">
+                        Stock <span class="text-red-500">*</span>
+                    </label>
+                    <input type="number" id="stock" name="stock" required
+                           value="{{ old('stock') }}"
+                           class="w-full px-4 py-3 rounded-xl border border-gray-300 focus:ring-2 focus:ring-purple-500 focus:border-purple-500 outline-none transition"
+                           placeholder="0" min="0">
+                    @error('stock')
+                    <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                    @enderror
+                </div>
+            </div>
+
+            {{-- Photo Upload --}}
+            <div>
+                <label class="block text-sm font-semibold text-gray-700 mb-2">
+                    Product Photo
+                </label>
+                <div id="drop-area" class="border-2 border-dashed border-gray-300 rounded-xl p-8 text-center cursor-pointer hover:border-purple-500 transition">
+                    <svg class="w-12 h-12 mx-auto text-gray-400 mb-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M7 16a4 4 0 01-.88-7.903A5 5 0 1115.9 6L16 6a5 5 0 011 9.9M15 13l-3-3m0 0l-3 3m3-3v12"/>
+                    </svg>
+                    <p class="text-gray-600 mb-1">Drag & Drop photo here or click to select file</p>
+                    <p class="text-xs text-gray-500">PNG, JPG, JPEG (Max 2MB)</p>
+                    <input type="file" name="photo" id="fileElem" accept="image/*" class="hidden">
+                    <img id="preview" class="mx-auto mt-4 max-h-48 rounded-lg hidden">
+                </div>
+                @error('photo')
+                <p class="text-sm text-red-500 mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            {{-- Buttons --}}
+            <div class="flex flex-col space-y-3">
+                <button type="submit"
+                        class="w-full bg-gradient-to-r from-indigo-500 to-purple-600 text-white py-3 px-6 rounded-xl font-semibold shadow-md hover:shadow-lg transition transform hover:-translate-y-0.5 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:ring-offset-2">
+                    Create Product
+                </button>
+                <button type="button" onclick="resetForm()"
+                        class="w-full bg-gray-100 border border-gray-300 text-gray-700 py-3 px-6 rounded-xl font-semibold hover:bg-gray-200 transition">
+                    Cancel
+                </button>
+            </div>
+        </form>
+    </div>
 </div>
 
 <script>
@@ -61,24 +160,71 @@ const dropArea = document.getElementById('drop-area');
 const fileInput = document.getElementById('fileElem');
 const preview = document.getElementById('preview');
 
+// Klik untuk memilih file
 dropArea.addEventListener('click', () => fileInput.click());
-dropArea.addEventListener('dragover', (e) => { e.preventDefault(); dropArea.classList.add('bg-gray-100'); });
-dropArea.addEventListener('dragleave', () => dropArea.classList.remove('bg-gray-100'));
-dropArea.addEventListener('drop', (e) => {
+
+// Prevent default drag behaviors
+['dragenter', 'dragover', 'dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, preventDefaults, false);
+    document.body.addEventListener(eventName, preventDefaults, false);
+});
+
+function preventDefaults(e) {
     e.preventDefault();
-    dropArea.classList.remove('bg-gray-100');
-    const files = e.dataTransfer.files;
-    if(files.length > 0){
+    e.stopPropagation();
+}
+
+// Highlight drop area saat drag over
+['dragenter', 'dragover'].forEach(eventName => {
+    dropArea.addEventListener(eventName, highlight, false);
+});
+
+['dragleave', 'drop'].forEach(eventName => {
+    dropArea.addEventListener(eventName, unhighlight, false);
+});
+
+function highlight(e) {
+    dropArea.classList.add('bg-purple-50', 'border-purple-500');
+}
+
+function unhighlight(e) {
+    dropArea.classList.remove('bg-purple-50', 'border-purple-500');
+}
+
+// Handle dropped files
+dropArea.addEventListener('drop', handleDrop, false);
+
+function handleDrop(e) {
+    const dt = e.dataTransfer;
+    const files = dt.files;
+    
+    if (files.length > 0) {
         fileInput.files = files;
         showPreview(files[0]);
     }
-});
-fileInput.addEventListener('change', () => { if(fileInput.files.length>0) showPreview(fileInput.files[0]); });
+}
 
-function showPreview(file){
+// Handle file input change
+fileInput.addEventListener('change', () => {
+    if (fileInput.files.length > 0) {
+        showPreview(fileInput.files[0]);
+    }
+});
+
+function showPreview(file) {
     const reader = new FileReader();
-    reader.onload = (e) => { preview.src = e.target.result; preview.classList.remove('hidden'); }
+    reader.onload = (e) => {
+        preview.src = e.target.result;
+        preview.classList.remove('hidden');
+    }
     reader.readAsDataURL(file);
 }
+
+function resetForm() {
+    document.getElementById('productForm').reset();
+    preview.classList.add('hidden');
+    preview.src = '';
+}
 </script>
-</x-app-layout>
+
+@endsection

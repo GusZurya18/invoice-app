@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | @yield('title', 'InvoicePro')</title>
+    <title>@yield('title', 'InvoicePro')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         /* Custom styles for navigation */
@@ -18,12 +18,12 @@
             text-decoration: none;
             margin-bottom: 0.5rem;
         }
-        
+       
         .nav-link:hover {
             background-color: #d1d5db;
             transform: translateX(2px);
         }
-        
+       
         .nav-link.active {
             background: linear-gradient(to right, #8b5cf6, #7c3aed);
             color: white;
@@ -116,20 +116,20 @@
                 transition: transform 0.3s ease;
                 z-index: 16;
             }
-            
+           
             .sidebar.open {
                 transform: translateX(0);
                 box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             }
-            
+           
             .mobile-menu-btn {
                 display: block;
             }
-            
+           
             .mobile-overlay.open {
                 display: block;
             }
-            
+           
             main {
                 margin-left: 0 !important;
             }
@@ -139,11 +139,11 @@
             .sidebar {
                 transform: translateX(0) !important;
             }
-            
+           
             .mobile-menu-btn {
                 display: none;
             }
-            
+           
             .mobile-overlay {
                 display: none !important;
             }
@@ -172,32 +172,47 @@
                         <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                     </svg>
                 </div>
-                <span class="text-black font-semibold text-lg">Admin Panel</span>
+                <span class="text-black font-semibold text-lg">InvoicePro</span>
             </div>
 
             <!-- Navigation -->
             <nav class="space-y-2">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('admin.dashboard') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
+                <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('dashboard') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                     </svg>
                     {{ __('Dashboard') }}
                 </a>
-                
-                <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('admin.users.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
+               
+                <a href="{{ route('invoices.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('invoices.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
+                        <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3h8v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 112 0v1h3a1 1 0 110 2H9.5a1 1 0 01-1-1V9z"/>
+                    </svg>
+                    {{ __('Invoice') }}
+                </a>
+               
+                <a href="{{ route('customers.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('customers.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
                     </svg>
-                    {{ __('Kelola User') }}
+                    {{ __('Customer') }}
                 </a>
-                
-                <a href="#" class="flex items-center px-4 py-3 bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 rounded-lg transition-colors">
+               
+                <a href="{{ route('categories.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('categories.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
+                        <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
                     </svg>
-                    {{ __('Task User') }}
+                    {{ __('Categories') }}
                 </a>
-                
+               
+                <a href="{{ route('products.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('products.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6z"/>
+                    </svg>
+                    {{ __('Products') }}
+                </a>
+               
                 <!-- Settings Dropdown -->
                 <div class="settings-dropdown mt-8">
                     <a href="#" class="flex items-center px-4 py-3 bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 rounded-lg transition-colors" onclick="toggleSettingsDropdown(event)">
@@ -214,6 +229,12 @@
                             <div class="font-medium text-base text-gray-800">{{ Auth::user()->name }}</div>
                             <div class="font-medium text-sm text-gray-500">{{ Auth::user()->email }}</div>
                         </div>
+                        <a href="{{ route('profile.edit') }}" class="settings-dropdown-item">
+                            <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                            </svg>
+                            {{ __('Profile') }}
+                        </a>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
                             <a href="{{ route('logout') }}" class="settings-dropdown-item text-red-600 hover:bg-red-50" onclick="event.preventDefault(); this.closest('form').submit();">
@@ -234,7 +255,7 @@
             <header class="bg-white/10 backdrop-blur-sm shadow-sm">
                 <div class="px-6 py-4">
                     <div class="flex items-center justify-between">
-                        <h1 class="text-2xl font-bold text-white">@yield('page-title', 'Admin Dashboard')</h1>
+                        <h1 class="text-2xl font-bold text-white">@yield('page-title', 'Dashboard')</h1>
                         <div class="flex items-center space-x-4">
                             @yield('header-actions')
                         </div>
@@ -355,7 +376,5 @@
             });
         });
     </script>
-
-    @yield('scripts')
 </body>
 </html>
