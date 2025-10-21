@@ -92,16 +92,7 @@
                 <input type="text" id="searchInput" class="w-full sm:w-80 pl-10 sm:pl-12 pr-3 sm:pr-4 py-2 sm:py-3 bg-white rounded-full border-0 focus:ring-2 focus:ring-white focus:ring-opacity-30 text-gray-900 placeholder-gray-500 text-sm sm:text-base" placeholder="Cari products...">
             </div>
             
-            <div class="relative slide-up flex-shrink-0" style="animation-delay: 0.3s;">
-                <button onclick="showNotification()" class="relative p-2 sm:p-3 text-white glass-effect rounded-full transition-all duration-300 hover:scale-110 group">
-                    <svg class="w-5 h-5 sm:w-6 sm:h-6" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M10 2C7.79086 2 6 3.79086 6 6V8C6 9.10457 5.10457 10 4 10H3C2.44772 10 2 10.4477 2 11V12C2 12.5523 2.44772 13 3 13H17C17.5523 13 18 12.5523 18 12V11C18 10.4477 17.5523 10 17 10H16C14.8954 10 14 9.10457 14 8V6C14 3.79086 12.2091 2 10 2Z"></path>
-                        <path d="M8 15C8 16.1046 8.89543 17 10 17C11.1046 17 12 16.1046 12 15H8Z"></path>
-                    </svg>
-                    <span class="absolute -top-1 -right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full animate-ping"></span>
-                    <span class="absolute -top-1 -right-1 w-2.5 h-2.5 sm:w-3 sm:h-3 bg-red-500 rounded-full"></span>
-                </button>
-            </div>
+            
         </div>
     </div>
     

@@ -1,8 +1,8 @@
 @extends('layouts.admin')
 
 @section('content')
-    <div class="p-8" style="background: ; min-height: 100vh;">
-        <h1 class="text-3xl font-bold mb-8 text-white">Kelola User</h1>
+    <div class="p-4 md:p-8" style="background: ; min-height: 100vh;">
+        <h1 class="text-2xl md:text-3xl font-bold mb-6 md:mb-8 text-white">Kelola User</h1>
 
         @if(session('success'))
             <div class="text-white p-4 rounded-xl mb-6 shadow-sm" style="background-color: #10b981;">
@@ -16,7 +16,7 @@
             </div>
         @endif
 
-        <!-- Stats Cards (Optional - sesuai design Figma) -->
+        <!-- Stats Cards -->
         <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-6">
             <div class="bg-white rounded-2xl p-5 shadow-lg">
                 <div class="flex items-center justify-between">
@@ -35,26 +35,28 @@
 
         <div class="bg-white shadow-lg rounded-2xl overflow-hidden">
             <!-- Table Header Actions -->
-            <div class="px-6 py-4 border-b" style="border-color: #e2e8f0;">
-                <div class="flex items-center justify-between">
-                    <div class="flex items-center space-x-3">
+            <div class="px-4 md:px-6 py-4 border-b" style="border-color: #e2e8f0;">
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0">
+                    <!-- Filter Tabs -->
+                    <div class="flex items-center space-x-2 overflow-x-auto pb-2 md:pb-0">
                         <a href="{{ route('admin.users.index') }}" 
-                           class="px-4 py-2 rounded-lg text-sm font-medium {{ request('role') == null ? 'text-white' : 'text-gray-600 hover:bg-gray-50' }}" 
+                           class="px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap {{ request('role') == null ? 'text-white' : 'text-gray-600 hover:bg-gray-50' }}" 
                            style="{{ request('role') == null ? 'background-color: #6366f1;' : '' }}">
                             All
                         </a>
                         <a href="{{ route('admin.users.index', ['role' => 'admin']) }}" 
-                           class="px-4 py-2 rounded-lg text-sm font-medium {{ request('role') == 'admin' ? 'text-white' : 'text-gray-600 hover:bg-gray-50' }}" 
+                           class="px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap {{ request('role') == 'admin' ? 'text-white' : 'text-gray-600 hover:bg-gray-50' }}" 
                            style="{{ request('role') == 'admin' ? 'background-color: #6366f1;' : '' }}">
                             Admin
                         </a>
                         <a href="{{ route('admin.users.index', ['role' => 'user']) }}" 
-                           class="px-4 py-2 rounded-lg text-sm font-medium {{ request('role') == 'user' ? 'text-white' : 'text-gray-600 hover:bg-gray-50' }}" 
+                           class="px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap {{ request('role') == 'user' ? 'text-white' : 'text-gray-600 hover:bg-gray-50' }}" 
                            style="{{ request('role') == 'user' ? 'background-color: #6366f1;' : '' }}">
                             User
                         </a>
                     </div>
-                    <div class="flex items-center space-x-3">
+                    <!-- Filter Button -->
+                    <div class="flex items-center justify-end">
                         <button class="p-2 rounded-lg hover:bg-gray-50">
                             <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.293A1 1 0 013 6.586V4z" />
@@ -64,8 +66,8 @@
                 </div>
             </div>
 
-            <!-- Table Container -->
-            <div class="overflow-x-auto">
+            <!-- Desktop Table View -->
+            <div class="hidden md:block overflow-x-auto">
                 <table class="w-full">
                     <thead>
                         <tr style="background-color: #f1f5f9;">
@@ -113,7 +115,6 @@
                             </td>
                             <td class="p-4">
                                 <div class="flex items-center justify-center space-x-2">
-                                    <!-- Delete Button -->
                                     <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" 
                                           onsubmit="return confirm('Yakin hapus user ini?')" class="inline-block">
                                         @csrf
@@ -132,55 +133,127 @@
                 </table>
             </div>
 
-            <!-- Custom Pagination -->
-            <div class="px-6 py-4 border-t" style="border-color: #e2e8f0; background-color: #fafbfc;">
+            <!-- Mobile Card View -->
+            <div class="md:hidden divide-y" style="border-color: #f1f5f9;">
+                @foreach($users as $user)
+                <div class="p-4 hover:bg-gray-50 transition">
+                    <div class="flex items-start justify-between mb-3">
+                        <div class="flex-1">
+                            <div class="flex items-center space-x-2 mb-1">
+                                <span class="text-xs font-medium text-gray-500">ID: {{ $user->id }}</span>
+                                @if($user->role == 'admin')
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold" style="background-color: #dbeafe; color: #1e40af;">
+                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
+                                        </svg>
+                                        Admin
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-semibold" style="background-color: #dcfce7; color: #166534;">
+                                        <svg class="w-3 h-3 mr-1" fill="currentColor" viewBox="0 0 20 20">
+                                            <path fill-rule="evenodd" d="M10 9a3 3 0 100-6 3 3 0 000 6zm-7 9a7 7 0 1114 0H3z" clip-rule="evenodd"/>
+                                        </svg>
+                                        {{ ucfirst($user->role) }}
+                                    </span>
+                                @endif
+                            </div>
+                            <h3 class="text-base font-bold text-gray-900 mb-1">{{ $user->name }}</h3>
+                            <p class="text-sm text-gray-600">{{ $user->email }}</p>
+                        </div>
+                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" 
+                              onsubmit="return confirm('Yakin hapus user ini?')" class="inline-block ml-3">
+                            @csrf
+                            @method('DELETE')
+                            <button type="submit" class="w-9 h-9 rounded-lg flex items-center justify-center hover:bg-red-200 transition" style="background-color: #fee2e2;">
+                                <svg class="w-4 h-4" style="color: #dc2626;" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </form>
+                    </div>
+                </div>
+                @endforeach
+            </div>
+
+            <!-- Pagination -->
+            <div class="px-4 md:px-6 py-4 border-t" style="border-color: #e2e8f0; background-color: #fafbfc;">
                 @if($users->hasPages())
-                    <div class="flex items-center justify-between">
-                        <div class="text-sm text-gray-600">
+                    <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0">
+                        <!-- Info Text -->
+                        <div class="text-xs md:text-sm text-gray-600 text-center md:text-left">
                             Menampilkan <span class="font-semibold text-gray-900">{{ $users->firstItem() }}</span> - 
                             <span class="font-semibold text-gray-900">{{ $users->lastItem() }}</span> dari 
                             <span class="font-semibold text-gray-900">{{ $users->total() }}</span> user
                         </div>
-                        <div class="flex items-center space-x-2">
+                        
+                        <!-- Pagination Controls -->
+                        <div class="flex items-center justify-center space-x-2">
                             {{-- Previous Button --}}
                             @if($users->onFirstPage())
-                                <span class="px-4 py-2 rounded-lg text-gray-400 cursor-not-allowed text-sm font-medium" style="background-color: #f1f5f9;">
-                                    ← Previous
+                                <span class="px-3 md:px-4 py-2 rounded-lg text-gray-400 cursor-not-allowed text-xs md:text-sm font-medium" style="background-color: #f1f5f9;">
+                                    <span class="hidden md:inline">← Previous</span>
+                                    <span class="md:hidden">←</span>
                                 </span>
                             @else
                                 <a href="{{ $users->previousPageUrl() }}" 
-                                   class="px-4 py-2 rounded-lg text-white text-sm font-medium hover:opacity-90 transition" style="background-color: #6366f1;">
-                                    ← Previous
+                                   class="px-3 md:px-4 py-2 rounded-lg text-white text-xs md:text-sm font-medium hover:opacity-90 transition" style="background-color: #6366f1;">
+                                    <span class="hidden md:inline">← Previous</span>
+                                    <span class="md:hidden">←</span>
                                 </a>
                             @endif
 
                             {{-- Page Numbers --}}
                             <div class="flex space-x-1">
-                                @foreach(range(1, $users->lastPage()) as $page)
+                                @php
+                                    $start = max(1, $users->currentPage() - 1);
+                                    $end = min($users->lastPage(), $users->currentPage() + 1);
+                                @endphp
+                                
+                                @if($start > 1)
+                                    <a href="{{ $users->url(1) }}" 
+                                       class="w-8 md:w-10 h-8 md:h-10 rounded-lg text-xs md:text-sm font-medium flex items-center justify-center hover:bg-gray-100 transition" style="background-color: #f8fafc; color: #64748b;">
+                                        1
+                                    </a>
+                                    @if($start > 2)
+                                        <span class="px-1 flex items-center text-gray-400 text-xs">...</span>
+                                    @endif
+                                @endif
+                                
+                                @for($page = $start; $page <= $end; $page++)
                                     @if($page == $users->currentPage())
-                                        <span class="w-10 h-10 rounded-lg text-white text-sm font-bold flex items-center justify-center shadow-sm" style="background-color: #6366f1;">
+                                        <span class="w-8 md:w-10 h-8 md:h-10 rounded-lg text-white text-xs md:text-sm font-bold flex items-center justify-center shadow-sm" style="background-color: #6366f1;">
                                             {{ $page }}
                                         </span>
-                                    @elseif($page == 1 || $page == $users->lastPage() || abs($page - $users->currentPage()) <= 2)
+                                    @else
                                         <a href="{{ $users->url($page) }}" 
-                                           class="w-10 h-10 rounded-lg text-sm font-medium flex items-center justify-center hover:bg-gray-100 transition" style="background-color: #f8fafc; color: #64748b;">
+                                           class="w-8 md:w-10 h-8 md:h-10 rounded-lg text-xs md:text-sm font-medium flex items-center justify-center hover:bg-gray-100 transition" style="background-color: #f8fafc; color: #64748b;">
                                             {{ $page }}
                                         </a>
-                                    @elseif(abs($page - $users->currentPage()) == 3)
-                                        <span class="px-2 flex items-center text-gray-400">...</span>
                                     @endif
-                                @endforeach
+                                @endfor
+                                
+                                @if($end < $users->lastPage())
+                                    @if($end < $users->lastPage() - 1)
+                                        <span class="px-1 flex items-center text-gray-400 text-xs">...</span>
+                                    @endif
+                                    <a href="{{ $users->url($users->lastPage()) }}" 
+                                       class="w-8 md:w-10 h-8 md:h-10 rounded-lg text-xs md:text-sm font-medium flex items-center justify-center hover:bg-gray-100 transition" style="background-color: #f8fafc; color: #64748b;">
+                                        {{ $users->lastPage() }}
+                                    </a>
+                                @endif
                             </div>
 
                             {{-- Next Button --}}
                             @if($users->hasMorePages())
                                 <a href="{{ $users->nextPageUrl() }}" 
-                                   class="px-4 py-2 rounded-lg text-white text-sm font-medium hover:opacity-90 transition" style="background-color: #6366f1;">
-                                    Next →
+                                   class="px-3 md:px-4 py-2 rounded-lg text-white text-xs md:text-sm font-medium hover:opacity-90 transition" style="background-color: #6366f1;">
+                                    <span class="hidden md:inline">Next →</span>
+                                    <span class="md:hidden">→</span>
                                 </a>
                             @else
-                                <span class="px-4 py-2 rounded-lg text-gray-400 cursor-not-allowed text-sm font-medium" style="background-color: #f1f5f9;">
-                                    Next →
+                                <span class="px-3 md:px-4 py-2 rounded-lg text-gray-400 cursor-not-allowed text-xs md:text-sm font-medium" style="background-color: #f1f5f9;">
+                                    <span class="hidden md:inline">Next →</span>
+                                    <span class="md:hidden">→</span>
                                 </span>
                             @endif
                         </div>
@@ -218,6 +291,20 @@
         
         .overflow-x-auto::-webkit-scrollbar-thumb:hover {
             background: #94a3b8;
+        }
+
+        /* Mobile optimizations */
+        @media (max-width: 768px) {
+            /* Hide horizontal scrollbar on mobile for filter tabs */
+            .overflow-x-auto::-webkit-scrollbar {
+                display: none;
+            }
+            
+            /* Smooth scroll for filter tabs */
+            .overflow-x-auto {
+                -webkit-overflow-scrolling: touch;
+                scrollbar-width: none;
+            }
         }
     </style>
 @endsection

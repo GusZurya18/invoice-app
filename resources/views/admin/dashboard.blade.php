@@ -8,14 +8,6 @@
         <h1 class="text-3xl font-bold text-gray-900 mb-2">Selamat Datang Kembali, {{ $adminName }}! 👋</h1>
         <p class="text-gray-600 mb-6">Berikut adalah overview bisnis komprehensif untuk membantu Anda membuat keputusan strategis dan laporan keuangan</p>
         <div class="flex gap-3">
-            <button class="bg-gradient-to-r from-indigo-600 to-purple-600 text-white px-6 py-3 rounded-xl font-semibold flex items-center gap-2">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M9 2a2 2 0 00-2 2v8a2 2 0 002 2h6a2 2 0 002-2V6.414A2 2 0 0016.414 5L14 2.586A2 2 0 0012.586 2H9z"/></svg>
-                Generate Report
-            </button>
-            <button class="bg-white border-2 border-gray-200 text-gray-700 px-6 py-3 rounded-xl font-semibold flex items-center gap-2">
-                <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 17a1 1 0 011-1h12a1 1 0 110 2H4a1 1 0 01-1-1zm3.293-7.707a1 1 0 011.414 0L9 10.586V3a1 1 0 112 0v7.586l1.293-1.293a1 1 0 111.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd"/></svg>
-                Export Data
-            </button>
         </div>
     </div>
 

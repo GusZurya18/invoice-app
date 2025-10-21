@@ -5,12 +5,12 @@
 @section('page-title', 'Profile Settings')
 
 @section('content')
-<div class="min-h-screen bg-gradient-to-br from-gray-50 to-indigo-100 py-8 rounded-lg">
+<div class="min-h-screen py-8 rounded-lg">
     <div class="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
         <!-- Header Section -->
         <div class="text-center mb-8">
-            <h1 class="text-3xl font-bold text-gray-900 mb-2">Profile Settings</h1>
-            <p class="text-gray-600">Manage your account information and security settings</p>
+            <h1 class="text-3xl font-bold text-white mb-2">Profile Settings</h1>
+            <p class="text-gray-100">Manage your account information and security settings</p>
         </div>
 
         <!-- Profile Cards Container -->

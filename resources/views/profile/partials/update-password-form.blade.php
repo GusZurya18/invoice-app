@@ -8,6 +8,36 @@
         <p class="text-gray-600">{{ __('Ensure your account is using a long, random password to stay secure.') }}</p>
     </div>
 
+    <!-- Success Notification Toast -->
+    @if (session('status') === 'password-updated')
+        <div id="successToast" class="fixed top-4 right-4 z-50 animate-slideIn">
+            <div class="bg-white rounded-lg shadow-2xl border-l-4 border-green-500 p-4 max-w-md">
+                <div class="flex items-start">
+                    <div class="flex-shrink-0">
+                        <div class="w-10 h-10 rounded-full bg-green-100 flex items-center justify-center">
+                            <svg class="w-6 h-6 text-green-600" fill="currentColor" viewBox="0 0 20 20">
+                                <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
+                            </svg>
+                        </div>
+                    </div>
+                    <div class="ml-3 flex-1">
+                        <h3 class="text-sm font-semibold text-gray-900">Password Updated!</h3>
+                        <p class="mt-1 text-sm text-gray-600">Your password has been changed successfully.</p>
+                    </div>
+                    <button onclick="closeToast()" class="ml-4 flex-shrink-0 text-gray-400 hover:text-gray-600 focus:outline-none">
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
+                            <path fill-rule="evenodd" d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z" clip-rule="evenodd"></path>
+                        </svg>
+                    </button>
+                </div>
+                <!-- Progress Bar -->
+                <div class="mt-3 w-full bg-gray-200 rounded-full h-1 overflow-hidden">
+                    <div id="progressBar" class="bg-green-500 h-1 rounded-full transition-all duration-100 ease-linear" style="width: 100%"></div>
+                </div>
+            </div>
+        </div>
+    @endif
+
     <form method="post" action="{{ route('password.update') }}" class="space-y-6">
         @csrf
         @method('put')
@@ -34,7 +64,7 @@
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <button 
                         type="button" 
-                        onclick="togglePassword('update_password_current_password')"
+                        onclick="togglePassword('update_password_current_password', 'eye-icon-current')"
                         class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600"
                     >
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="eye-icon-current">
@@ -45,7 +75,7 @@
                 </div>
             </div>
             @if($errors->updatePassword->get('current_password'))
-                <div class="flex items-center space-x-2 text-red-600 text-sm">
+                <div class="flex items-center space-x-2 text-red-600 text-sm animate-shake">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                     </svg>
@@ -76,7 +106,7 @@
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <button 
                         type="button" 
-                        onclick="togglePassword('update_password_password')"
+                        onclick="togglePassword('update_password_password', 'eye-icon-new')"
                         class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600"
                     >
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="eye-icon-new">
@@ -87,7 +117,7 @@
                 </div>
             </div>
             @if($errors->updatePassword->get('password'))
-                <div class="flex items-center space-x-2 text-red-600 text-sm">
+                <div class="flex items-center space-x-2 text-red-600 text-sm animate-shake">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                     </svg>
@@ -118,7 +148,7 @@
                 <div class="absolute inset-y-0 right-0 pr-3 flex items-center">
                     <button 
                         type="button" 
-                        onclick="togglePassword('update_password_password_confirmation')"
+                        onclick="togglePassword('update_password_password_confirmation', 'eye-icon-confirm')"
                         class="text-gray-400 hover:text-gray-600 focus:outline-none focus:text-gray-600"
                     >
                         <svg class="h-5 w-5" fill="none" stroke="currentColor" viewBox="0 0 24 24" id="eye-icon-confirm">
@@ -129,7 +159,7 @@
                 </div>
             </div>
             @if($errors->updatePassword->get('password_confirmation'))
-                <div class="flex items-center space-x-2 text-red-600 text-sm">
+                <div class="flex items-center space-x-2 text-red-600 text-sm animate-shake">
                     <svg class="w-4 h-4" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7 4a1 1 0 11-2 0 1 1 0 012 0zm-1-9a1 1 0 00-1 1v4a1 1 0 102 0V6a1 1 0 00-1-1z" clip-rule="evenodd"></path>
                     </svg>
@@ -165,42 +195,63 @@
 
         <!-- Action Buttons -->
         <div class="flex items-center justify-between pt-4">
-            <div class="flex items-center space-x-4">
-                <button type="submit" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 border border-transparent rounded-lg font-medium text-white hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:scale-105">
-                    <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
-                    </svg>
-                    {{ __('Update Password') }}
-                </button>
-
-                @if (session('status') === 'password-updated')
-                    <div
-                        x-data="{ show: true }"
-                        x-show="show"
-                        x-transition:enter="transition ease-out duration-300"
-                        x-transition:enter-start="opacity-0 transform translate-y-2"
-                        x-transition:enter-end="opacity-100 transform translate-y-0"
-                        x-transition:leave="transition ease-in duration-300"
-                        x-transition:leave-start="opacity-100 transform translate-y-0"
-                        x-transition:leave-end="opacity-0 transform translate-y-2"
-                        x-init="setTimeout(() => show = false, 3000)"
-                        class="flex items-center space-x-2 text-green-600"
-                    >
-                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.707-9.293a1 1 0 00-1.414-1.414L9 10.586 7.707 9.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"></path>
-                        </svg>
-                        <span class="font-medium">{{ __('Password updated successfully!') }}</span>
-                    </div>
-                @endif
-            </div>
+            <button type="submit" class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-green-500 to-emerald-600 border border-transparent rounded-lg font-medium text-white hover:from-green-600 hover:to-emerald-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-green-500 transition-all duration-200 transform hover:scale-105 shadow-lg hover:shadow-xl">
+                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                </svg>
+                {{ __('Update Password') }}
+            </button>
         </div>
     </form>
 </div>
 
+<style>
+@keyframes slideIn {
+    from {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+    to {
+        transform: translateX(0);
+        opacity: 1;
+    }
+}
+
+@keyframes slideOut {
+    from {
+        transform: translateX(0);
+        opacity: 1;
+    }
+    to {
+        transform: translateX(400px);
+        opacity: 0;
+    }
+}
+
+@keyframes shake {
+    0%, 100% { transform: translateX(0); }
+    10%, 30%, 50%, 70%, 90% { transform: translateX(-5px); }
+    20%, 40%, 60%, 80% { transform: translateX(5px); }
+}
+
+.animate-slideIn {
+    animation: slideIn 0.4s ease-out;
+}
+
+.animate-slideOut {
+    animation: slideOut 0.4s ease-in;
+}
+
+.animate-shake {
+    animation: shake 0.5s ease-in-out;
+}
+</style>
+
 <script>
-function togglePassword(inputId) {
+// Toggle password visibility
+function togglePassword(inputId, iconId) {
     const input = document.getElementById(inputId);
-    const eyeIcon = document.getElementById('eye-icon-' + inputId.split('_')[inputId.split('_').length - 1]);
+    const eyeIcon = document.getElementById(iconId);
     
     if (input.type === 'password') {
         input.type = 'text';
@@ -215,4 +266,35 @@ function togglePassword(inputId) {
         `;
     }
 }
+
+// Close toast notification
+function closeToast() {
+    const toast = document.getElementById('successToast');
+    if (toast) {
+        toast.classList.remove('animate-slideIn');
+        toast.classList.add('animate-slideOut');
+        setTimeout(() => {
+            toast.remove();
+        }, 400);
+    }
+}
+
+// Auto close toast with progress bar
+document.addEventListener('DOMContentLoaded', function() {
+    const toast = document.getElementById('successToast');
+    const progressBar = document.getElementById('progressBar');
+    
+    if (toast && progressBar) {
+        let width = 100;
+        const interval = setInterval(() => {
+            width -= 2;
+            progressBar.style.width = width + '%';
+            
+            if (width <= 0) {
+                clearInterval(interval);
+                closeToast();
+            }
+        }, 100); // 5 seconds total (100 * 50ms = 5000ms)
+    }
+});
 </script>

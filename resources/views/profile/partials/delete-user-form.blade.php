@@ -26,8 +26,7 @@
     <!-- Delete Account Button -->
     <div class="text-center">
         <button
-            x-data=""
-            x-on:click.prevent="$dispatch('open-modal', 'confirm-user-deletion')"
+            onclick="openDeleteModal()"
             class="inline-flex items-center px-6 py-3 bg-gradient-to-r from-red-500 to-red-600 border border-transparent rounded-lg font-medium text-white hover:from-red-600 hover:to-red-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-red-500 transition-all duration-200 transform hover:scale-105"
         >
             <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -39,43 +38,23 @@
 
     <!-- Confirmation Modal -->
     <div
-        x-data="{ show: false }"
-        x-on:open-modal.window="$event.detail == 'confirm-user-deletion' ? show = true : null"
-        x-on:close.window="show = false"
-        x-on:keydown.escape.window="show = false"
-        x-show="show"
-        x-init="show = {{ $errors->userDeletion->isNotEmpty() ? 'true' : 'false' }}"
-        class="fixed inset-0 overflow-y-auto z-50"
-        style="display: none;"
+        id="deleteAccountModal"
+        class="fixed inset-0 overflow-y-auto z-50 hidden"
     >
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
             <!-- Background overlay -->
             <div 
-                x-show="show" 
-                x-transition:enter="ease-out duration-300" 
-                x-transition:enter-start="opacity-0" 
-                x-transition:enter-end="opacity-100" 
-                x-transition:leave="ease-in duration-200" 
-                x-transition:leave-start="opacity-100" 
-                x-transition:leave-end="opacity-0"
-                class="fixed inset-0 transition-opacity" 
-                aria-hidden="true"
-            >
-                <div class="absolute inset-0 bg-gray-500 opacity-75"></div>
-            </div>
+                id="modalBackdrop"
+                class="fixed inset-0 transition-opacity bg-gray-500 bg-opacity-75"
+                onclick="closeDeleteModal()"
+            ></div>
 
             <!-- Center the modal contents -->
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
 
             <!-- Modal panel -->
             <div
-                x-show="show"
-                x-transition:enter="ease-out duration-300"
-                x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                x-transition:leave="ease-in duration-200"
-                x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                id="modalPanel"
                 class="inline-block align-bottom bg-white rounded-lg px-4 pt-5 pb-4 text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full sm:p-6"
             >
                 <form method="post" action="{{ route('profile.destroy') }}">
@@ -144,7 +123,7 @@
                         </button>
                         <button 
                             type="button"
-                            x-on:click="show = false"
+                            onclick="closeDeleteModal()"
                             class="mt-3 w-full inline-flex justify-center rounded-md border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-indigo-500 sm:mt-0 sm:ml-3 sm:w-auto sm:text-sm transition-colors duration-200"
                         >
                             {{ __('Cancel') }}
@@ -154,4 +133,79 @@
             </div>
         </div>
     </div>
+
+    <script>
+        // Open modal function
+        function openDeleteModal() {
+            const modal = document.getElementById('deleteAccountModal');
+            const backdrop = document.getElementById('modalBackdrop');
+            const panel = document.getElementById('modalPanel');
+            
+            modal.classList.remove('hidden');
+            
+            // Trigger animations
+            setTimeout(() => {
+                backdrop.style.opacity = '1';
+                panel.style.opacity = '1';
+                panel.style.transform = 'translateY(0) scale(1)';
+            }, 10);
+            
+            // Prevent body scroll
+            document.body.style.overflow = 'hidden';
+        }
+
+        // Close modal function
+        function closeDeleteModal() {
+            const modal = document.getElementById('deleteAccountModal');
+            const backdrop = document.getElementById('modalBackdrop');
+            const panel = document.getElementById('modalPanel');
+            
+            // Trigger exit animations
+            backdrop.style.opacity = '0';
+            panel.style.opacity = '0';
+            panel.style.transform = 'translateY(1rem) scale(0.95)';
+            
+            setTimeout(() => {
+                modal.classList.add('hidden');
+                // Restore body scroll
+                document.body.style.overflow = '';
+            }, 200);
+        }
+
+        // Close modal on Escape key
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                const modal = document.getElementById('deleteAccountModal');
+                if (!modal.classList.contains('hidden')) {
+                    closeDeleteModal();
+                }
+            }
+        });
+
+        // Auto-open modal if there are validation errors
+        @if($errors->userDeletion->isNotEmpty())
+            document.addEventListener('DOMContentLoaded', function() {
+                openDeleteModal();
+            });
+        @endif
+    </script>
+
+    <style>
+        #modalBackdrop {
+            opacity: 0;
+            transition: opacity 0.3s ease-out;
+        }
+
+        #modalPanel {
+            opacity: 0;
+            transform: translateY(1rem) scale(0.95);
+            transition: all 0.3s ease-out;
+        }
+
+        @media (min-width: 640px) {
+            #modalPanel {
+                transform: translateY(0) scale(0.95);
+            }
+        }
+    </style>
 </section>

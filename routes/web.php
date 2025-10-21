@@ -8,6 +8,10 @@ use App\Http\Controllers\CategoryController;
 use App\Http\Controllers\ProductController;
 use App\Http\Controllers\DashboardController;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\Admin\TaskController as AdminTaskController;
+use App\Http\Controllers\User\TaskController as UserTaskController;
+use App\Http\Controllers\TaskFileController;
+use App\Http\Controllers\TaskCommentController;
 
 /*
 |--------------------------------------------------------------------------
@@ -36,20 +40,21 @@ Route::get('/contact', function () {
 | Hanya bisa diakses oleh user dengan role "admin"
 */
 Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
-    Route::get('/dashboard', function () {
-        return view('admin.dashboard');
-    })->name('dashboard');
-
-    Route::resource('users', UserController::class);
-});
-
-Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
+    // Dashboard
     Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-});
-
-Route::prefix('admin')->middleware(['auth'])->group(function () {
-    Route::get('/users', [UserController::class, 'index'])->name('admin.users.index');
-    Route::delete('/users/{user}', [UserController::class, 'destroy'])->name('admin.users.destroy');
+    
+    // Users Management
+    Route::resource('users', UserController::class);
+    
+    // ⭐ TASK ROUTES - PENTING: Bulk delete HARUS sebelum Route::resource
+    Route::delete('tasks/bulk-destroy', [AdminTaskController::class, 'bulkDestroy'])->name('tasks.bulk-destroy');
+    Route::resource('tasks', AdminTaskController::class);
+    
+    // Task Files & Comments (Admin)
+    Route::post('tasks/{task}/files', [TaskFileController::class,'store'])->name('tasks.files.store');
+    Route::delete('tasks/files/{file}', [TaskFileController::class,'destroy'])->name('tasks.files.destroy');
+    Route::post('tasks/{task}/comments', [TaskCommentController::class,'store'])->name('tasks.comments.store');
+    Route::delete('tasks/comments/{comment}', [TaskCommentController::class,'destroy'])->name('tasks.comments.destroy');
 });
 
 /*
@@ -70,13 +75,10 @@ Route::middleware(['auth','isUser'])->group(function () {
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
     // Invoice
-     Route::delete('/invoices/bulk-delete', [InvoiceController::class, 'bulkDelete'])->name('invoices.bulk-delete');
+    Route::delete('/invoices/bulk-delete', [InvoiceController::class, 'bulkDelete'])->name('invoices.bulk-delete');
     Route::resource('invoices', InvoiceController::class);
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
     Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
- 
-
-
 
     // Customer
     Route::resource('customers', CustomerController::class);
@@ -88,6 +90,26 @@ Route::middleware(['auth','isUser'])->group(function () {
     Route::resource('products', ProductController::class);
 });
 
+/*
+|--------------------------------------------------------------------------
+| User Task Routes
+|--------------------------------------------------------------------------
+| Route untuk user melihat dan mengelola task mereka
+*/
+Route::middleware('auth')->group(function(){
+    // My Tasks
+    Route::get('my-tasks', [UserTaskController::class,'index'])->name('tasks.my');
+    Route::get('tasks/{task}', [UserTaskController::class,'show'])->name('tasks.show');
+    Route::post('tasks/{task}/status', [UserTaskController::class,'updateStatus'])->name('tasks.update.status');
+
+    // Task Files (User)
+    Route::post('tasks/{task}/files', [TaskFileController::class,'store'])->name('tasks.files.store');
+    Route::delete('tasks/files/{file}', [TaskFileController::class,'destroy'])->name('tasks.files.destroy');
+
+    // Task Comments (User)
+    Route::post('tasks/{task}/comments', [TaskCommentController::class,'store'])->name('tasks.comments.store');
+    Route::delete('tasks/comments/{comment}', [TaskCommentController::class,'destroy'])->name('tasks.comments.destroy');
+});
 
 /*
 |--------------------------------------------------------------------------

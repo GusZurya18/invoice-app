@@ -29,12 +29,12 @@
             color: white;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        
+       
         .nav-link.active:hover {
             background: linear-gradient(to right, #7c3aed, #6d28d9);
             transform: translateX(2px);
         }
-        
+       
         /* Mobile menu button */
         .mobile-menu-btn {
             display: none;
@@ -49,7 +49,7 @@
             padding: 0.5rem;
             cursor: pointer;
         }
-        
+       
         /* Overlay for mobile */
         .mobile-overlay {
             display: none;
@@ -61,14 +61,14 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 15;
         }
-        
+       
         /* Settings dropdown */
         .settings-dropdown {
             position: relative;
             display: inline-block;
             width: 100%;
         }
-        
+       
         .settings-dropdown-content {
             display: none;
             position: absolute;
@@ -81,11 +81,11 @@
             z-index: 1000;
             margin-top: 0.5rem;
         }
-        
+       
         .settings-dropdown.active .settings-dropdown-content {
             display: block;
         }
-        
+       
         .settings-dropdown-item {
             color: #374151;
             padding: 12px 16px;
@@ -95,20 +95,20 @@
             border-bottom: 1px solid #e5e7eb;
             transition: background-color 0.2s ease;
         }
-        
+       
         .settings-dropdown-item:hover {
             background-color: #f3f4f6;
         }
-        
+       
         .settings-dropdown-item:last-child {
             border-bottom: none;
             border-radius: 0 0 0.5rem 0.5rem;
         }
-        
+       
         .settings-dropdown-item:first-child {
             border-radius: 0.5rem 0.5rem 0 0;
         }
-        
+       
         /* Responsive design */
         @media (max-width: 1024px) {
             .sidebar {
@@ -134,7 +134,7 @@
                 margin-left: 0 !important;
             }
         }
-        
+       
         @media (min-width: 1025px) {
             .sidebar {
                 transform: translateX(0) !important;
@@ -177,14 +177,14 @@
 
             <!-- Navigation -->
             <nav class="space-y-2">
-                <a href="{{ route('dashboard') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('dashboard') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
+                <a href="{{ route('dashboard') }}" class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('dashboard') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                     </svg>
                     {{ __('Dashboard') }}
                 </a>
                
-                <a href="{{ route('invoices.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('invoices.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
+                <a href="{{ route('invoices.index') }}" class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('invoices.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
                         <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3h8v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 112 0v1h3a1 1 0 110 2H9.5a1 1 0 01-1-1V9z"/>
@@ -192,26 +192,44 @@
                     {{ __('Invoice') }}
                 </a>
                
-                <a href="{{ route('customers.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('customers.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
+                <a href="{{ route('customers.index') }}" class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('customers.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
                     </svg>
                     {{ __('Customer') }}
                 </a>
                
-                <a href="{{ route('categories.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('categories.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
+                <a href="{{ route('categories.index') }}" class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('categories.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z"/>
                     </svg>
                     {{ __('Categories') }}
                 </a>
                
-                <a href="{{ route('products.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('products.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
+                <a href="{{ route('products.index') }}" class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('products.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6z"/>
                     </svg>
                     {{ __('Products') }}
                 </a>
+
+<a href="{{ route('tasks.my') }}" 
+   class="nav-item flex items-center px-4 py-3 
+   {{ request()->routeIs('tasks.*') 
+        ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' 
+        : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' 
+    }} rounded-lg transition-colors">
+
+    <!-- ✅ New Task Icon (Clipboard Check) -->
+    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
+        <path fill-rule="evenodd" 
+              d="M9 2a1 1 0 00-1 1v1H5a2 2 0 00-2 2v9a2 2 0 002 2h10a2 2 0 002-2V6a2 2 0 00-2-2h-3V3a1 1 0 00-1-1H9zm0 3V4h2v1H9zm2.707 6.707a1 1 0 00-1.414-1.414L9 11.586 8.707 11.293a1 1 0 00-1.414 1.414l1 1a1 1 0 001.414 0l2-2z" 
+              clip-rule="evenodd" />
+    </svg>
+
+    {{ __('My Tasks') }}
+</a>
+
                
                 <!-- Settings Dropdown -->
                 <div class="settings-dropdown mt-8">
@@ -310,13 +328,13 @@
         if (mobileMenuButton) {
             mobileMenuButton.addEventListener('click', toggleMobileMenu);
         }
-        
+       
         if (mobileOverlay) {
             mobileOverlay.addEventListener('click', toggleMobileMenu);
         }
 
-        // Close menu when clicking on nav links in mobile view
-        document.querySelectorAll('.sidebar a').forEach(link => {
+        // Close menu when clicking on nav links in mobile view (EXCEPT settings dropdown)
+        document.querySelectorAll('.nav-item').forEach(link => {
             link.addEventListener('click', () => {
                 if (window.innerWidth < 1025) {
                     toggleMobileMenu();
@@ -327,11 +345,13 @@
         // Settings dropdown functionality
         function toggleSettingsDropdown(event) {
             event.preventDefault();
+            event.stopPropagation(); // Prevent event bubbling
+            
             const dropdown = event.currentTarget.closest('.settings-dropdown');
             const arrow = document.getElementById('settingsArrow');
-            
+           
             dropdown.classList.toggle('active');
-            
+           
             // Rotate arrow
             if (dropdown.classList.contains('active')) {
                 arrow.style.transform = 'rotate(180deg)';
@@ -344,13 +364,24 @@
         document.addEventListener('click', function(event) {
             const dropdown = document.querySelector('.settings-dropdown');
             const arrow = document.getElementById('settingsArrow');
-            
+           
             if (dropdown && !dropdown.contains(event.target)) {
                 dropdown.classList.remove('active');
                 if (arrow) {
                     arrow.style.transform = 'rotate(0deg)';
                 }
             }
+        });
+
+        // Close sidebar when clicking dropdown items in mobile
+        document.querySelectorAll('.settings-dropdown-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth < 1025) {
+                    setTimeout(() => {
+                        toggleMobileMenu();
+                    }, 200); // Small delay for better UX
+                }
+            });
         });
 
         // Handle window resize
@@ -360,20 +391,6 @@
                 mobileOverlay.classList.remove('open');
                 document.body.style.overflow = '';
             }
-        });
-
-        // Close settings dropdown on mobile when clicking nav links
-        document.querySelectorAll('.sidebar nav > a').forEach(link => {
-            link.addEventListener('click', () => {
-                const dropdown = document.querySelector('.settings-dropdown');
-                const arrow = document.getElementById('settingsArrow');
-                if (dropdown) {
-                    dropdown.classList.remove('active');
-                    if (arrow) {
-                        arrow.style.transform = 'rotate(0deg)';
-                    }
-                }
-            });
         });
     </script>
 </body>

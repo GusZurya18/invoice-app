@@ -18,23 +18,23 @@
             text-decoration: none;
             margin-bottom: 0.5rem;
         }
-        
+       
         .nav-link:hover {
             background-color: #d1d5db;
             transform: translateX(2px);
         }
-        
+       
         .nav-link.active {
             background: linear-gradient(to right, #8b5cf6, #7c3aed);
             color: white;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
         }
-        
+       
         .nav-link.active:hover {
             background: linear-gradient(to right, #7c3aed, #6d28d9);
             transform: translateX(2px);
         }
-        
+       
         /* Mobile menu button */
         .mobile-menu-btn {
             display: none;
@@ -49,7 +49,7 @@
             padding: 0.5rem;
             cursor: pointer;
         }
-        
+       
         /* Overlay for mobile */
         .mobile-overlay {
             display: none;
@@ -61,14 +61,14 @@
             background-color: rgba(0, 0, 0, 0.5);
             z-index: 15;
         }
-        
+       
         /* Settings dropdown */
         .settings-dropdown {
             position: relative;
             display: inline-block;
             width: 100%;
         }
-        
+       
         .settings-dropdown-content {
             display: none;
             position: absolute;
@@ -81,11 +81,11 @@
             z-index: 1000;
             margin-top: 0.5rem;
         }
-        
+       
         .settings-dropdown.active .settings-dropdown-content {
             display: block;
         }
-        
+       
         .settings-dropdown-item {
             color: #374151;
             padding: 12px 16px;
@@ -95,20 +95,20 @@
             border-bottom: 1px solid #e5e7eb;
             transition: background-color 0.2s ease;
         }
-        
+       
         .settings-dropdown-item:hover {
             background-color: #f3f4f6;
         }
-        
+       
         .settings-dropdown-item:last-child {
             border-bottom: none;
             border-radius: 0 0 0.5rem 0.5rem;
         }
-        
+       
         .settings-dropdown-item:first-child {
             border-radius: 0.5rem 0.5rem 0 0;
         }
-        
+       
         /* Responsive design */
         @media (max-width: 1024px) {
             .sidebar {
@@ -116,34 +116,34 @@
                 transition: transform 0.3s ease;
                 z-index: 16;
             }
-            
+           
             .sidebar.open {
                 transform: translateX(0);
                 box-shadow: 2px 0 10px rgba(0, 0, 0, 0.1);
             }
-            
+           
             .mobile-menu-btn {
                 display: block;
             }
-            
+           
             .mobile-overlay.open {
                 display: block;
             }
-            
+           
             main {
                 margin-left: 0 !important;
             }
         }
-        
+       
         @media (min-width: 1025px) {
             .sidebar {
                 transform: translateX(0) !important;
             }
-            
+           
             .mobile-menu-btn {
                 display: none;
             }
-            
+           
             .mobile-overlay {
                 display: none !important;
             }
@@ -177,27 +177,27 @@
 
             <!-- Navigation -->
             <nav class="space-y-2">
-                <a href="{{ route('admin.dashboard') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('admin.dashboard') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
+                <a href="{{ route('admin.dashboard') }}" class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('admin.dashboard') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z"/>
                     </svg>
                     {{ __('Dashboard') }}
                 </a>
                 
-                <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-3 {{ request()->routeIs('admin.users.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
+                <a href="{{ route('admin.users.index') }}" class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('admin.users.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z"/>
                     </svg>
                     {{ __('Kelola User') }}
                 </a>
                 
-                <a href="#" class="flex items-center px-4 py-3 bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 rounded-lg transition-colors">
+                <a href="{{ route('admin.tasks.index')}}" class="nav-item flex items-center px-4 py-3 bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                         <path fill-rule="evenodd" d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z" clip-rule="evenodd"/>
                     </svg>
                     {{ __('Task User') }}
                 </a>
-                
+               
                 <!-- Settings Dropdown -->
                 <div class="settings-dropdown mt-8">
                     <a href="#" class="flex items-center px-4 py-3 bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800 rounded-lg transition-colors" onclick="toggleSettingsDropdown(event)">
@@ -289,13 +289,13 @@
         if (mobileMenuButton) {
             mobileMenuButton.addEventListener('click', toggleMobileMenu);
         }
-        
+       
         if (mobileOverlay) {
             mobileOverlay.addEventListener('click', toggleMobileMenu);
         }
 
-        // Close menu when clicking on nav links in mobile view
-        document.querySelectorAll('.sidebar a').forEach(link => {
+        // Close menu when clicking on nav links in mobile view (EXCEPT settings dropdown)
+        document.querySelectorAll('.nav-item').forEach(link => {
             link.addEventListener('click', () => {
                 if (window.innerWidth < 1025) {
                     toggleMobileMenu();
@@ -306,11 +306,13 @@
         // Settings dropdown functionality
         function toggleSettingsDropdown(event) {
             event.preventDefault();
+            event.stopPropagation(); // Prevent event bubbling
+            
             const dropdown = event.currentTarget.closest('.settings-dropdown');
             const arrow = document.getElementById('settingsArrow');
-            
+           
             dropdown.classList.toggle('active');
-            
+           
             // Rotate arrow
             if (dropdown.classList.contains('active')) {
                 arrow.style.transform = 'rotate(180deg)';
@@ -323,13 +325,24 @@
         document.addEventListener('click', function(event) {
             const dropdown = document.querySelector('.settings-dropdown');
             const arrow = document.getElementById('settingsArrow');
-            
+           
             if (dropdown && !dropdown.contains(event.target)) {
                 dropdown.classList.remove('active');
                 if (arrow) {
                     arrow.style.transform = 'rotate(0deg)';
                 }
             }
+        });
+
+        // Close sidebar when clicking dropdown items in mobile
+        document.querySelectorAll('.settings-dropdown-item').forEach(item => {
+            item.addEventListener('click', () => {
+                if (window.innerWidth < 1025) {
+                    setTimeout(() => {
+                        toggleMobileMenu();
+                    }, 200); // Small delay for better UX
+                }
+            });
         });
 
         // Handle window resize
@@ -339,20 +352,6 @@
                 mobileOverlay.classList.remove('open');
                 document.body.style.overflow = '';
             }
-        });
-
-        // Close settings dropdown on mobile when clicking nav links
-        document.querySelectorAll('.sidebar nav > a').forEach(link => {
-            link.addEventListener('click', () => {
-                const dropdown = document.querySelector('.settings-dropdown');
-                const arrow = document.getElementById('settingsArrow');
-                if (dropdown) {
-                    dropdown.classList.remove('active');
-                    if (arrow) {
-                        arrow.style.transform = 'rotate(0deg)';
-                    }
-                }
-            });
         });
     </script>
 
