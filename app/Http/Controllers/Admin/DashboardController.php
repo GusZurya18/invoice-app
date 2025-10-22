@@ -8,6 +8,7 @@ use App\Models\Category;
 use App\Models\Invoice;
 use App\Models\Customer;
 use App\Models\User;
+use App\Models\CompanySetting; // TAMBAHKAN INI
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -16,9 +17,13 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Ambil company settings
+        $company = CompanySetting::current(); // TAMBAHKAN INI
+        
         //Ambil Data Admin
         $currentAdmin = Auth::user();
         $adminName = $currentAdmin->name ?? 'Admin';
+        
         // Total Statistik Existing
         $totalUsers      = User::count();
         $totalProducts   = Product::count();
@@ -29,7 +34,7 @@ class DashboardController extends Controller
         $paidInvoices    = Invoice::where('status', 'paid')->count();
         $unpaidInvoices  = Invoice::where('status', 'unpaid')->count();
 
-        //  METRICS BARU
+        // METRICS BARU
         
         // 1. Total Revenue (semua invoice paid)
         $totalRevenue = Invoice::where('status', 'paid')->sum('total_amount');
@@ -40,7 +45,6 @@ class DashboardController extends Controller
             ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
             ->where('invoices.status', 'paid')
             ->sum(DB::raw('invoice_items.quantity * (products.price * 0.6)'));
-            // Asumsi cost = 60% dari selling price
         
         // 3. Net Profit
         $netProfit = $totalRevenue - $totalExpense;
@@ -48,8 +52,15 @@ class DashboardController extends Controller
         // 4. Payment Collection Rate (% invoice yang udah dibayar)
         $paymentCollectionRate = $totalInvoices > 0 ? ($paidInvoices / $totalInvoices) * 100 : 0;
         
-        // 5. Total Revenue YTD (Year To Date) - sudah dipotong pajak
+        // 5. Total Revenue YTD (Year To Date) - GUNAKAN TAX RATE DARI DB
+        // Di method index(), ubah bagian ini:
+
+        // SEBELUMNYA (hardcode):
         $taxRate = 0.11; // PPN 11% - sesuaikan dengan kebutuhan
+
+        // JADI (dynamic):
+        $company = CompanySetting::current();
+        $taxRate = $company->tax_rate / 100;
         $totalRevenueYTD = Invoice::where('status', 'paid')
             ->whereYear('created_at', date('Y'))
             ->sum('total_amount');
@@ -97,7 +108,7 @@ class DashboardController extends Controller
 
         // Kategori
         $categorySales = DB::table('invoice_items')
-            ->join('products', 'invoice_items.product_id', '=', 'products.id')
+            ->join('products', 'product_id', '=', 'products.id')
             ->join('categories', 'products.category_id', '=', 'categories.id')
             ->select('categories.name as category', DB::raw('SUM(invoice_items.quantity) as total_sold'))
             ->groupBy('categories.name')
@@ -122,7 +133,7 @@ class DashboardController extends Controller
             'topProducts',
             'categorySales',
             
-            //  New metrics
+            // New metrics
             'totalRevenue',
             'totalExpense',
             'netProfit',
@@ -132,8 +143,10 @@ class DashboardController extends Controller
 
             // Admin Data
             'currentAdmin',
-            'adminName'
-
+            'adminName',
+            
+            // Company Data - TAMBAHKAN INI
+            'company'
         ));
     }
 }

@@ -1,3 +1,94 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Custom Cursor Base */
+body {
+    cursor: none;
+}
+
+.custom-cursor {
+    width: 32px;
+    height: 32px;
+    border: 2px solid;
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 9999;
+    transition: all 0.3s ease;
+    transform: translate(-50%, -50%);
+}
+
+.custom-cursor::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 100%;
+    height: 100%;
+    border-radius: 50%;
+    border: 2px solid;
+    animation: pulse 2s infinite;
+    opacity: 0.5;
+}
+
+@keyframes pulse {
+    0%, 100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.5;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0;
+    }
+}
+
+.custom-cursor-dot {
+    width: 8px;
+    height: 8px;
+    border-radius: 50%;
+    position: fixed;
+    pointer-events: none;
+    z-index: 10000;
+    transform: translate(-50%, -50%);
+    transition: all 0.15s ease;
+}
+
+/* Admin - Orange/Gold */
+body.admin-cursor .custom-cursor,
+body.admin-cursor .custom-cursor::before {
+    border-color: #f59e0b;
+}
+
+body.admin-cursor .custom-cursor-dot {
+    background: linear-gradient(135deg, #f59e0b, #d97706);
+    box-shadow: 0 0 15px rgba(245, 158, 11, 0.6);
+}
+
+body.admin-cursor .custom-cursor.hover {
+    width: 56px;
+    height: 56px;
+    background-color: rgba(245, 158, 11, 0.1);
+}
+
+/* User - Teal/Emerald */
+body.user-cursor .custom-cursor,
+body.user-cursor .custom-cursor::before {
+    border-color: #14b8a6;
+}
+
+body.user-cursor .custom-cursor-dot {
+    background: linear-gradient(135deg, #14b8a6, #0d9488);
+    box-shadow: 0 0 15px rgba(20, 184, 166, 0.6);
+}
+
+body.user-cursor .custom-cursor.hover {
+    width: 56px;
+    height: 56px;
+    background-color: rgba(20, 184, 166, 0.1);
+}
+
+a, button, input, textarea, select, [role="button"] {
+    cursor: none;
+}

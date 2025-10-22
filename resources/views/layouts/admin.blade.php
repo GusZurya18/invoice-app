@@ -18,6 +18,7 @@
                 <a href="{{ route('admin.dashboard') }}" class="block px-4 py-2 hover:bg-gray-700">Dashboard</a>
                 <a href="{{ route('admin.users.index') }}" class="block px-4 py-2 hover:bg-gray-700">Kelola User</a>
                 <a href="{{ route('admin.tasks.index') }}" class="block px-4 py-2">Task User</a>
+                <a href="{{ route('admin.company-settings.edit') }}" class="block px-4 py-2 hover:bg-gray-700">Company Settings</a>
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
                     <button type="submit" class="w-full text-left px-4 py-2 hover:bg-gray-700">Logout</button>

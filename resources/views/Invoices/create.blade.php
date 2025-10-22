@@ -30,7 +30,31 @@
 
                 <div class="mb-4">
                     <label>Diskon (%)</label>
-                    <input type="number" id="discount" name="discount_percent" class="w-full border p-2" value="0" min="0" max="100">
+                    <input type="number" id="discount" name="discount_percent" class="w-full border p-2" value="0" min="0" max="100" step="0.01">
+                </div>
+
+                <!-- TAX RATE INPUT - BARU -->
+                <div class="mb-4">
+                    <label for="tax_rate" class="block text-sm font-medium text-gray-700 mb-1">
+                        Tax Rate (%)
+                    </label>
+                    <input 
+                        type="number" 
+                        id="tax_rate" 
+                        name="tax_rate" 
+                        class="w-full border border-gray-300 rounded p-2 focus:ring-2 focus:ring-blue-500 focus:border-blue-500" 
+                        value="{{ old('tax_rate', $company->tax_rate) }}" 
+                        min="0" 
+                        max="100" 
+                        step="0.01"
+                    >
+                    <p class="mt-1 text-sm text-gray-500">
+                        💡 Default: {{ number_format($company->tax_rate, 2) }}% (from company settings). 
+                        You can change it for special customers (e.g., 0%, 6%, 7%, 3%).
+                    </p>
+                    @error('tax_rate')
+                        <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                    @enderror
                 </div>
 
                 <div class="mb-4">
@@ -82,27 +106,39 @@
                     <textarea name="notes" class="w-full border p-2" rows="3" placeholder="Tambahkan catatan untuk invoice..."></textarea>
                 </div>
 
-                <!-- Ringkasan Pembayaran -->
+                <!-- Ringkasan Pembayaran - UPDATED WITH TAX -->
                 <div class="mb-6 bg-gray-50 p-4 rounded-lg border">
                     <h4 class="text-lg font-semibold mb-3">Ringkasan Pembayaran</h4>
                     
                     <div class="space-y-2">
-                        <!-- Total Bayaran (Subtotal) -->
+                        <!-- Subtotal -->
                         <div class="flex justify-between">
-                            <span class="font-medium">Total Bayaran (sebelum diskon):</span>
+                            <span class="font-medium">Subtotal (sebelum diskon & pajak):</span>
                             <span id="subtotal-amount" class="font-bold">Rp 0</span>
                         </div>
 
-                        <!-- Diskon Persen (hanya tampil jika ada diskon) -->
+                        <!-- Diskon Persen -->
                         <div class="flex justify-between" id="discount-percent-row" style="display: none;">
                             <span class="text-gray-600">Diskon:</span>
                             <span id="discount-percent-display" class="text-gray-600">0%</span>
                         </div>
 
-                        <!-- Total Diskon (hanya tampil jika ada diskon) -->
+                        <!-- Total Diskon -->
                         <div class="flex justify-between" id="discount-amount-row" style="display: none;">
-                            <span class="text-red-600">Total Potongan Harga Diskon:</span>
+                            <span class="text-red-600">Potongan Diskon:</span>
                             <span id="discount-amount-display" class="font-medium text-red-600">-Rp 0</span>
+                        </div>
+
+                        <!-- Subtotal After Discount -->
+                        <div class="flex justify-between" id="subtotal-after-discount-row">
+                            <span class="font-medium">Subtotal Setelah Diskon:</span>
+                            <span id="subtotal-after-discount" class="font-bold">Rp 0</span>
+                        </div>
+
+                        <!-- Tax -->
+                        <div class="flex justify-between" id="tax-row">
+                            <span class="text-blue-600">Pajak (<span id="tax-percent-display">0</span>%):</span>
+                            <span id="tax-amount-display" class="font-medium text-blue-600">+Rp 0</span>
                         </div>
 
                         <!-- Garis Pembatas -->
@@ -137,7 +173,7 @@
         function recalc(){
             let subtotal = 0;
             
-            // Hitung subtotal dari semua item
+            // 1. Hitung subtotal dari semua item
             document.querySelectorAll('#items-table tbody tr').forEach(r=>{
                 let qty = parseFloat(r.querySelector('.qty').value) || 0;
                 let price = parseFloat(r.querySelector('.product-select').selectedOptions[0]?.dataset.price) || 0;
@@ -149,33 +185,47 @@
                 subtotal += total;
             });
 
-            // Update subtotal (total bayaran sebelum diskon)
+            // Update subtotal
             document.getElementById('subtotal-amount').textContent = formatRupiah(subtotal);
 
-            // Hitung dan tampilkan diskon
+            // 2. Hitung diskon
             let discountPercent = parseFloat(document.getElementById('discount').value) || 0;
             let discountAmount = 0;
-            let grandTotal = subtotal;
+            let subtotalAfterDiscount = subtotal;
 
             if(discountPercent > 0) {
-                // Tampilkan baris diskon
                 document.getElementById('discount-percent-row').style.display = 'flex';
                 document.getElementById('discount-amount-row').style.display = 'flex';
                 
-                // Hitung diskon
                 discountAmount = (discountPercent / 100) * subtotal;
-                grandTotal = subtotal - discountAmount;
+                subtotalAfterDiscount = subtotal - discountAmount;
                 
-                // Update tampilan diskon
                 document.getElementById('discount-percent-display').textContent = discountPercent + '%';
                 document.getElementById('discount-amount-display').textContent = '-' + formatRupiah(discountAmount);
             } else {
-                // Sembunyikan baris diskon jika tidak ada diskon
                 document.getElementById('discount-percent-row').style.display = 'none';
                 document.getElementById('discount-amount-row').style.display = 'none';
             }
 
-            // Update grand total
+            // Update subtotal after discount
+            document.getElementById('subtotal-after-discount').textContent = formatRupiah(subtotalAfterDiscount);
+
+            // 3. Hitung pajak
+            let taxRate = parseFloat(document.getElementById('tax_rate').value) || 0;
+            let taxAmount = 0;
+
+            if(taxRate > 0) {
+                taxAmount = (taxRate / 100) * subtotalAfterDiscount;
+                document.getElementById('tax-row').style.display = 'flex';
+            } else {
+                document.getElementById('tax-row').style.display = 'none';
+            }
+
+            document.getElementById('tax-percent-display').textContent = taxRate.toFixed(2);
+            document.getElementById('tax-amount-display').textContent = '+' + formatRupiah(taxAmount);
+
+            // 4. Grand Total
+            let grandTotal = subtotalAfterDiscount + taxAmount;
             document.getElementById('grand-total').textContent = formatRupiah(grandTotal);
         }
 
@@ -184,7 +234,6 @@
             let tbody = document.querySelector('#items-table tbody');
             let tr = document.querySelector('.item-row').cloneNode(true);
 
-            // reset field
             tr.querySelectorAll('input').forEach(i=>{
                 i.name = i.name.replace(/\d+/, idx);
                 if(i.classList.contains('qty')) i.value = 1;
@@ -212,10 +261,11 @@
             }
         });
 
-        // Event listener qty, produk, diskon
+        // Event listeners
         document.querySelector('#items-table').addEventListener('input', recalc);
         document.querySelector('#items-table').addEventListener('change', recalc);
         document.getElementById('discount').addEventListener('input', recalc);
+        document.getElementById('tax_rate').addEventListener('input', recalc); // TAX RATE LISTENER
 
         // Inisialisasi
         recalc();

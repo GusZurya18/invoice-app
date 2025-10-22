@@ -15,6 +15,30 @@
     <p class="text-sm text-gray-600">Dari: {{ $task->creator?->name }}</p>
     <p class="mt-3">{{ $task->description }}</p>
 
+    <div class="mt-4 bg-white border rounded-lg p-4 shadow-sm">
+    <h3 class="font-semibold text-lg mb-2">Informasi Tugas</h3>
+    <div class="grid grid-cols-1 sm:grid-cols-2 gap-y-1">
+        <p><span class="font-medium text-gray-700">Mulai:</span>
+            {{ \Carbon\Carbon::parse($task->start_date)->format('d M Y') }}
+        </p>
+        <p><span class="font-medium text-gray-700">Jatuh Tempo:</span>
+            {{ \Carbon\Carbon::parse($task->due_date)->format('d M Y') }}
+        </p>
+        <p><span class="font-medium text-gray-700">Prioritas:</span>
+            @php
+                $color = match($task->priority) {
+                    'High' => 'text-red-600 font-bold',
+                    'Medium' => 'text-yellow-600 font-semibold',
+                    'Low' => 'text-green-600 font-medium',
+                    default => 'text-gray-600',
+                };
+            @endphp
+            <span class="{{ $color }}">{{ ucfirst($task->priority) }}</span>
+        </p>
+    </div>
+</div>
+
+
     <div class="mt-4">
         <h4 class="font-semibold">Files</h4>
         <ul>

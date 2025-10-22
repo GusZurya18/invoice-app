@@ -120,9 +120,7 @@
                                     </tr>
                                 </thead>
                                 <tbody>
-                                    @php $subtotal = 0; @endphp
                                     @foreach($invoice->items as $index => $item)
-                                    @php $subtotal += $item->total; @endphp
                                     <tr class="border-b border-gray-100 hover:bg-gray-50">
                                         <td class="p-3">{{ $index + 1 }}</td>
                                         <td class="p-3 font-medium">{{ $item->product_name }}</td>
@@ -163,7 +161,7 @@
                             @endif
                         </div>
 
-                        <!-- Payment Summary -->
+                        <!-- Payment Summary WITH TAX -->
                         <div>
                             <div class="bg-gray-50 p-6 rounded-lg">
                                 <h4 class="text-lg font-semibold mb-4 text-gray-800">Ringkasan Pembayaran</h4>
@@ -171,21 +169,28 @@
                                 <div class="space-y-3">
                                     <!-- Subtotal -->
                                     <div class="flex justify-between">
-                                        <span class="font-medium">Total Bayaran (sebelum diskon):</span>
-                                        <span class="font-bold">Rp {{ number_format($subtotal, 0, ',', '.') }}</span>
+                                        <span class="font-medium">Subtotal:</span>
+                                        <span class="font-bold">Rp {{ number_format($invoice->subtotal, 0, ',', '.') }}</span>
                                     </div>
 
                                     <!-- Discount -->
                                     @if($invoice->discount_percent > 0)
                                         <div class="flex justify-between text-gray-600">
-                                            <span>Diskon:</span>
-                                            <span>{{ $invoice->discount_percent }}%</span>
+                                            <span>Diskon ({{ $invoice->discount_percent }}%):</span>
+                                            <span>-Rp {{ number_format($invoice->discount_amount, 0, ',', '.') }}</span>
                                         </div>
                                         
-                                        @php $discountAmount = ($invoice->discount_percent / 100) * $subtotal; @endphp
-                                        <div class="flex justify-between text-red-600">
-                                            <span>Total Potongan Harga Diskon:</span>
-                                            <span class="font-medium">-Rp {{ number_format($discountAmount, 0, ',', '.') }}</span>
+                                        <div class="flex justify-between font-medium">
+                                            <span>Subtotal Setelah Diskon:</span>
+                                            <span>Rp {{ number_format($invoice->subtotal_after_discount, 0, ',', '.') }}</span>
+                                        </div>
+                                    @endif
+
+                                    <!-- Tax -->
+                                    @if($invoice->tax_rate > 0)
+                                        <div class="flex justify-between text-blue-600">
+                                            <span>Pajak ({{ number_format($invoice->tax_rate, 2) }}%):</span>
+                                            <span class="font-medium">+Rp {{ number_format($invoice->tax_amount, 0, ',', '.') }}</span>
                                         </div>
                                     @endif
 
@@ -194,7 +199,7 @@
                                     <!-- Grand Total -->
                                     <div class="flex justify-between text-xl font-bold">
                                         <span>Grand Total:</span>
-                                        <span class="text-green-600">Rp {{ number_format($invoice->total_amount, 0, ',', '.') }}</span>
+                                        <span class="text-green-600">Rp {{ number_format($invoice->grand_total, 0, ',', '.') }}</span>
                                     </div>
                                 </div>
                             </div>
@@ -215,9 +220,7 @@
             .no-print { display: none !important; }
             body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
             .shadow-lg { box-shadow: none !important; }
-            /* Hide Laravel app header and navigation */
             header, nav, .bg-white.shadow { display: none !important; }
-            /* Hide page margins for print */
             body { margin: 0 !important; padding: 0 !important; }
             .py-12 { padding: 20px !important; }
         }

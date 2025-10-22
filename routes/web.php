@@ -12,6 +12,9 @@ use App\Http\Controllers\Admin\TaskController as AdminTaskController;
 use App\Http\Controllers\User\TaskController as UserTaskController;
 use App\Http\Controllers\TaskFileController;
 use App\Http\Controllers\TaskCommentController;
+use App\Http\Controllers\Admin\CompanySettingController;
+
+
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +48,9 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     })->name('dashboard');
 
     Route::resource('users', UserController::class);
+
+    Route::get('/company-settings', [CompanySettingController::class, 'edit'])->name('company-settings.edit');
+    Route::put('/company-settings', [CompanySettingController::class, 'update'])->name('company-settings.update');
 });
 
 Route::prefix('admin')->name('admin.')->middleware(['auth'])->group(function () {
@@ -79,6 +85,7 @@ Route::middleware('auth')->group(function(){
     Route::post('tasks/{task}/comments', [TaskCommentController::class,'store'])->name('tasks.comments.store');
     Route::delete('tasks/comments/{comment}', [TaskCommentController::class,'destroy'])->name('tasks.comments.destroy');
 });
+
 
 /*
 |--------------------------------------------------------------------------

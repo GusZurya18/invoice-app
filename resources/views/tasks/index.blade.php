@@ -3,6 +3,7 @@
 <h2>Tugas Saya</h2>
 </x-slot>
 <div class="max-w-4xl mx-auto p-4">
+
     <h1 class="text-2xl font-bold mb-4">Tugas Kamu</h1>
 
     <div class="grid grid-cols-1 gap-4">
