@@ -1,6 +1,6 @@
 <x-app-layout>
     <x-slot name="header" class="no-print">
-        <h2>Invoice {{ $invoice->code }}</h2>
+        <h2>{{ __('invoice.invoice') }} {{ $invoice->code }}</h2>
     </x-slot>
 
     <div class="py-12">
@@ -9,19 +9,45 @@
             <!-- Action Buttons -->
             <div class="mb-6 flex justify-between items-center bg-white p-4 rounded shadow no-print">
                 <a href="{{ route('invoices.index') }}" class="bg-gray-500 text-white px-4 py-2 rounded hover:bg-gray-600">
-                    ← Kembali ke Daftar Invoice
+                    ← {{ __('invoice.back_to_list') }}
                 </a>
                 
-                <div class="space-x-2">
+                <div class="flex items-center space-x-2">
+                    <!-- Language Selector -->
+                    <div class="relative inline-block">
+                        <select onchange="changeLanguage(this.value)" 
+                                class="bg-white border border-gray-300 text-gray-700 px-4 py-2 rounded hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-blue-500">
+                            <option value="id" {{ app()->getLocale() == 'id' ? 'selected' : '' }}>🇮🇩 Indonesia</option>
+                            <option value="en" {{ app()->getLocale() == 'en' ? 'selected' : '' }}>🇬🇧 English</option>
+                        </select>
+                    </div>
+
                     <a href="{{ route('invoices.edit', $invoice) }}" class="bg-yellow-500 text-white px-4 py-2 rounded hover:bg-yellow-600">
-                        Edit Invoice
+                        {{ __('invoice.edit_invoice') }}
                     </a>
                     <button onclick="window.print()" class="bg-blue-500 text-white px-4 py-2 rounded hover:bg-blue-600">
-                        Print
+                        {{ __('invoice.print') }}
                     </button>
-                    <a href="{{ route('invoices.pdf', $invoice) }}" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600">
-                        Download PDF
-                    </a>
+                    
+                    <!-- PDF Download Dropdown -->
+                    <div class="relative inline-block">
+                        <button onclick="togglePdfMenu()" id="pdfButton" class="bg-red-500 text-white px-4 py-2 rounded hover:bg-red-600 flex items-center space-x-1">
+                            <span>{{ __('invoice.download_pdf') }}</span>
+                            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+                            </svg>
+                        </button>
+                        <div id="pdfMenu" class="hidden absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg z-10 border border-gray-200">
+                            <a href="{{ route('invoices.pdf', ['invoice' => $invoice, 'lang' => 'id']) }}" 
+                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                🇮🇩 PDF Indonesia
+                            </a>
+                            <a href="{{ route('invoices.pdf', ['invoice' => $invoice, 'lang' => 'en']) }}" 
+                               class="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
+                                🇬🇧 PDF English
+                            </a>
+                        </div>
+                    </div>
                 </div>
             </div>
 
@@ -32,11 +58,11 @@
                 <div class="bg-gradient-to-r from-blue-600 to-purple-600 text-white p-6">
                     <div class="flex justify-between items-start">
                         <div>
-                            <h1 class="text-3xl font-bold">INVOICE</h1>
+                            <h1 class="text-3xl font-bold">{{ __('invoice.title') }}</h1>
                             <p class="text-blue-100 mt-1">{{ $invoice->code }}</p>
                         </div>
                         <div class="text-right">
-                            <div class="text-sm opacity-90">Tanggal Invoice</div>
+                            <div class="text-sm opacity-90">{{ __('invoice.date') }}</div>
                             <div class="text-lg font-semibold">{{ $invoice->created_at->format('d/m/Y') }}</div>
                         </div>
                     </div>
@@ -48,7 +74,7 @@
                         
                         <!-- Customer Info -->
                         <div>
-                            <h3 class="text-lg font-semibold mb-3 text-gray-800">Kepada:</h3>
+                            <h3 class="text-lg font-semibold mb-3 text-gray-800">{{ __('invoice.bill_to') }}:</h3>
                             <div class="bg-gray-50 p-4 rounded-lg">
                                 <div class="font-semibold text-gray-900">{{ $invoice->customer->name }}</div>
                                 @if($invoice->customer->email)
@@ -65,28 +91,28 @@
 
                         <!-- Invoice Details -->
                         <div>
-                            <h3 class="text-lg font-semibold mb-3 text-gray-800">Detail Invoice:</h3>
+                            <h3 class="text-lg font-semibold mb-3 text-gray-800">{{ __('invoice.invoice_details') }}:</h3>
                             <div class="space-y-2">
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Status:</span>
+                                    <span class="text-gray-600">{{ __('invoice.status') }}:</span>
                                     <span class="px-3 py-1 rounded-full text-sm font-medium
                                         {{ $invoice->status === 'paid' ? 'bg-green-100 text-green-800' : 
                                            ($invoice->status === 'pending' ? 'bg-yellow-100 text-yellow-800' : 
                                            ($invoice->status === 'draft' ? 'bg-gray-100 text-gray-800' : 'bg-red-100 text-red-800')) }}">
-                                        {{ ucfirst($invoice->status) }}
+                                        {{ __('invoice.' . $invoice->status) }}
                                     </span>
                                 </div>
                                 
                                 @if($invoice->start_date)
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Tanggal Mulai:</span>
+                                    <span class="text-gray-600">{{ __('invoice.start_date') }}:</span>
                                     <span class="font-medium">{{ $invoice->start_date->format('d/m/Y') }}</span>
                                 </div>
                                 @endif
                                 
                                 @if($invoice->due_date)
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Jatuh Tempo:</span>
+                                    <span class="text-gray-600">{{ __('invoice.due_date') }}:</span>
                                     <span class="font-medium {{ $invoice->due_date->isPast() && $invoice->paid_status !== 'done' ? 'text-red-600' : '' }}">
                                         {{ $invoice->due_date->format('d/m/Y') }}
                                     </span>
@@ -94,11 +120,11 @@
                                 @endif
                                 
                                 <div class="flex justify-between">
-                                    <span class="text-gray-600">Status Pembayaran:</span>
+                                    <span class="text-gray-600">{{ __('invoice.payment_status') }}:</span>
                                     <span class="px-3 py-1 rounded-full text-sm font-medium
                                         {{ $invoice->paid_status === 'done' ? 'bg-green-100 text-green-800' : 
                                            ($invoice->paid_status === 'overdue' ? 'bg-red-100 text-red-800' : 'bg-yellow-100 text-yellow-800') }}">
-                                        {{ ucfirst($invoice->paid_status) }}
+                                        {{ __('invoice.' . $invoice->paid_status) }}
                                     </span>
                                 </div>
                             </div>
@@ -107,16 +133,16 @@
 
                     <!-- Items Table -->
                     <div class="mb-6">
-                        <h3 class="text-lg font-semibold mb-3 text-gray-800">Item Invoice:</h3>
+                        <h3 class="text-lg font-semibold mb-3 text-gray-800">{{ __('invoice.items') }}:</h3>
                         <div class="overflow-x-auto">
                             <table class="w-full border border-gray-300 rounded-lg overflow-hidden">
                                 <thead class="bg-gray-100">
                                     <tr>
-                                        <th class="border-b border-gray-300 p-3 text-left">No</th>
-                                        <th class="border-b border-gray-300 p-3 text-left">Produk</th>
-                                        <th class="border-b border-gray-300 p-3 text-center">Qty</th>
-                                        <th class="border-b border-gray-300 p-3 text-right">Harga Satuan</th>
-                                        <th class="border-b border-gray-300 p-3 text-right">Total</th>
+                                        <th class="border-b border-gray-300 p-3 text-left">{{ __('invoice.no') }}</th>
+                                        <th class="border-b border-gray-300 p-3 text-left">{{ __('invoice.product') }}</th>
+                                        <th class="border-b border-gray-300 p-3 text-center">{{ __('invoice.qty') }}</th>
+                                        <th class="border-b border-gray-300 p-3 text-right">{{ __('invoice.unit_price') }}</th>
+                                        <th class="border-b border-gray-300 p-3 text-right">{{ __('invoice.total') }}</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -141,7 +167,7 @@
                         <div>
                             @if($invoice->notes)
                             <div class="mb-4">
-                                <h4 class="font-semibold mb-2 text-gray-800">Catatan:</h4>
+                                <h4 class="font-semibold mb-2 text-gray-800">{{ __('invoice.notes') }}:</h4>
                                 <div class="bg-gray-50 p-4 rounded-lg">
                                     <p class="text-gray-700">{{ $invoice->notes }}</p>
                                 </div>
@@ -150,10 +176,10 @@
 
                             @if($invoice->payment_proof)
                             <div>
-                                <h4 class="font-semibold mb-2 text-gray-800">Bukti Pembayaran:</h4>
+                                <h4 class="font-semibold mb-2 text-gray-800">{{ __('invoice.payment_proof') }}:</h4>
                                 <div class="bg-gray-50 p-4 rounded-lg">
                                     <img src="{{ asset('storage/'.$invoice->payment_proof) }}" 
-                                         alt="Bukti Pembayaran" 
+                                         alt="{{ __('invoice.payment_proof') }}" 
                                          class="max-w-full h-auto rounded border cursor-pointer hover:shadow-lg transition-shadow"
                                          onclick="window.open(this.src, '_blank')">
                                 </div>
@@ -161,27 +187,27 @@
                             @endif
                         </div>
 
-                        <!-- Payment Summary WITH TAX -->
+                        <!-- Payment Summary -->
                         <div>
                             <div class="bg-gray-50 p-6 rounded-lg">
-                                <h4 class="text-lg font-semibold mb-4 text-gray-800">Ringkasan Pembayaran</h4>
+                                <h4 class="text-lg font-semibold mb-4 text-gray-800">{{ __('invoice.payment_summary') }}</h4>
                                 
                                 <div class="space-y-3">
                                     <!-- Subtotal -->
                                     <div class="flex justify-between">
-                                        <span class="font-medium">Subtotal:</span>
+                                        <span class="font-medium">{{ __('invoice.subtotal') }}:</span>
                                         <span class="font-bold">Rp {{ number_format($invoice->subtotal, 0, ',', '.') }}</span>
                                     </div>
 
                                     <!-- Discount -->
                                     @if($invoice->discount_percent > 0)
                                         <div class="flex justify-between text-gray-600">
-                                            <span>Diskon ({{ $invoice->discount_percent }}%):</span>
+                                            <span>{{ __('invoice.discount') }} ({{ $invoice->discount_percent }}%):</span>
                                             <span>-Rp {{ number_format($invoice->discount_amount, 0, ',', '.') }}</span>
                                         </div>
                                         
                                         <div class="flex justify-between font-medium">
-                                            <span>Subtotal Setelah Diskon:</span>
+                                            <span>{{ __('invoice.subtotal_after_discount') }}:</span>
                                             <span>Rp {{ number_format($invoice->subtotal_after_discount, 0, ',', '.') }}</span>
                                         </div>
                                     @endif
@@ -189,7 +215,7 @@
                                     <!-- Tax -->
                                     @if($invoice->tax_rate > 0)
                                         <div class="flex justify-between text-blue-600">
-                                            <span>Pajak ({{ number_format($invoice->tax_rate, 2) }}%):</span>
+                                            <span>{{ __('invoice.tax') }} ({{ number_format($invoice->tax_rate, 2) }}%):</span>
                                             <span class="font-medium">+Rp {{ number_format($invoice->tax_amount, 0, ',', '.') }}</span>
                                         </div>
                                     @endif
@@ -198,7 +224,7 @@
 
                                     <!-- Grand Total -->
                                     <div class="flex justify-between text-xl font-bold">
-                                        <span>Grand Total:</span>
+                                        <span>{{ __('invoice.grand_total') }}:</span>
                                         <span class="text-green-600">Rp {{ number_format($invoice->grand_total, 0, ',', '.') }}</span>
                                     </div>
                                 </div>
@@ -209,11 +235,33 @@
 
                 <!-- Footer -->
                 <div class="bg-gray-50 p-4 text-center text-gray-600 text-sm">
-                    <p>Invoice ini dibuat secara otomatis pada {{ $invoice->created_at->format('d/m/Y H:i') }}</p>
+                    <p>{{ __('invoice.auto_generated') }} {{ $invoice->created_at->format('d/m/Y H:i') }}</p>
                 </div>
             </div>
         </div>
     </div>
+
+    <script>
+        function changeLanguage(lang) {
+            const currentUrl = new URL(window.location.href);
+            currentUrl.searchParams.set('lang', lang);
+            window.location.href = currentUrl.toString();
+        }
+
+        function togglePdfMenu() {
+            const menu = document.getElementById('pdfMenu');
+            menu.classList.toggle('hidden');
+        }
+
+        // Close PDF menu when clicking outside
+        document.addEventListener('click', function(event) {
+            const menu = document.getElementById('pdfMenu');
+            const button = document.getElementById('pdfButton');
+            if (!button.contains(event.target) && !menu.contains(event.target)) {
+                menu.classList.add('hidden');
+            }
+        });
+    </script>
 
     <style>
         @media print {

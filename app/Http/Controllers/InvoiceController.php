@@ -39,7 +39,10 @@ class InvoiceController extends Controller
         return view('invoices.create', compact('customers', 'products', 'company')); // UPDATED
     }
 
-    public function show(Invoice $invoice) {
+    public function show(Invoice $invoice, Request $request) {
+        $lang = $request->get('lang', 'id');
+        app()->setLocale($lang);
+        
         return view('invoices.show', compact('invoice'));
     }
 
@@ -236,9 +239,12 @@ class InvoiceController extends Controller
         return back()->with('success','Invoice berhasil dihapus');
     }
 
-    public function pdf(Invoice $invoice)
+    public function pdf(Invoice $invoice, Request $request)
     {
+        $lang = $request->get('lang', 'id');
+        app()->setLocale($lang);
+        
         $pdf = Pdf::loadView('invoices.invoice_pdf', compact('invoice'));
-        return $pdf->download($invoice->code.'.pdf');
+        return $pdf->download($invoice->code . '_' . $lang . '.pdf');
     }
 }

@@ -107,7 +107,12 @@ Route::middleware(['auth','isUser'])->group(function () {
     // Invoice
     Route::resource('invoices', InvoiceController::class);
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
-    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
+    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])
+        ->name('invoices.show');
+    
+        
+    Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])
+        ->name('invoices.pdf');
 
     // Customer
     Route::resource('customers', CustomerController::class);
