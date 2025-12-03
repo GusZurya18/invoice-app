@@ -9,7 +9,7 @@
 {{-- Top Bar --}}
 <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-4 sm:mb-6 gap-4 px-4 sm:px-0">
     <!-- Left Title -->
-    <h2 class="text-2xl sm:text-4xl font-bold text-indigo-600">Category</h2>
+    <h2 class="text-2xl sm:text-4xl font-bold text-white">Category</h2>
 
     <!-- Right Search & Notification -->
     <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">

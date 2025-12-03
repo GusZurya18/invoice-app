@@ -3,11 +3,32 @@
 @section('content')
 <div class="min-h-screen p-6">
     
-    {{-- Header Card --}}
+    {{-- Header Card with Year Filter --}}
     <div class="bg-white rounded-3xl shadow-lg p-8 mb-6">
-        <h1 class="text-3xl font-bold text-gray-900 mb-2">Selamat Datang Kembali, {{ $adminName }}! 👋</h1>
-        <p class="text-gray-600 mb-6">Berikut adalah overview bisnis komprehensif untuk membantu Anda membuat keputusan strategis dan laporan keuangan</p>
-        <div class="flex gap-3">
+        <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+            <div>
+                <h1 class="text-3xl font-bold text-gray-900 mb-2">Selamat Datang Kembali, {{ $adminName }}! 👋</h1>
+                <p class="text-gray-600">Berikut adalah overview bisnis komprehensif untuk membantu Anda membuat keputusan strategis dan laporan keuangan</p>
+            </div>
+            
+{{-- Year Filter --}}
+<div class="flex items-center gap-3">
+    <label class="text-sm font-semibold text-gray-700">Filter Tahun:</label>
+    <div class="relative">
+        <select id="yearFilter" class="appearance-none px-4 py-2.5 pr-10 border-2 border-blue-500 rounded-xl font-semibold text-gray-700 bg-white focus:ring-4 focus:ring-blue-200 focus:border-blue-600 transition-all cursor-pointer">
+            @foreach($availableYears as $year)
+                <option value="{{ $year }}" {{ $year == $selectedYear ? 'selected' : '' }}>
+                    {{ $year }}
+                </option>
+            @endforeach
+        </select>
+        <div class="absolute inset-y-0 right-0 flex items-center pr-3 pointer-events-none">
+            <svg class="w-5 h-5 text-gray-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 9l-7 7-7-7"></path>
+            </svg>
+        </div>
+    </div>
+</div>
         </div>
     </div>
 
@@ -17,7 +38,7 @@
             <div class="bg-gradient-to-br from-emerald-400 to-emerald-600 p-3 rounded-2xl w-fit mb-4">
                 <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/></svg>
             </div>
-            <h3 class="text-gray-500 text-sm font-medium mb-2">Total Revenue</h3>
+            <h3 class="text-gray-500 text-sm font-medium mb-2">Total Revenue ({{ $selectedYear }})</h3>
             <p class="text-3xl font-bold text-gray-900 mb-2">Rp {{ number_format($totalRevenue, 0, ',', '.') }}</p>
             <p class="text-emerald-600 text-sm font-semibold">↗ Invoice terbayar</p>
         </div>
@@ -26,7 +47,7 @@
             <div class="bg-gradient-to-br from-blue-400 to-blue-600 p-3 rounded-2xl w-fit mb-4">
                 <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M3 3a1 1 0 000 2v8a2 2 0 002 2h2.586l-1.293 1.293a1 1 0 101.414 1.414L10 15.414l2.293 2.293a1 1 0 001.414-1.414L12.414 15H15a2 2 0 002-2V5a1 1 0 100-2H3zm11.707 4.707a1 1 0 00-1.414-1.414L10 9.586 8.707 8.293a1 1 0 00-1.414 1.414l2 2a1 1 0 001.414 0l4-4z" clip-rule="evenodd"/></svg>
             </div>
-            <h3 class="text-gray-500 text-sm font-medium mb-2">Net Profit</h3>
+            <h3 class="text-gray-500 text-sm font-medium mb-2">Net Profit ({{ $selectedYear }})</h3>
             <p class="text-3xl font-bold text-gray-900 mb-2">Rp {{ number_format($netProfit, 0, ',', '.') }}</p>
             <p class="text-blue-600 text-sm font-semibold">↗ Revenue - Expenses</p>
         </div>
@@ -35,7 +56,7 @@
             <div class="bg-gradient-to-br from-orange-400 to-orange-600 p-3 rounded-2xl w-fit mb-4">
                 <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M10 2a4 4 0 00-4 4v1H5a1 1 0 00-.994.89l-1 9A1 1 0 004 18h12a1 1 0 00.994-1.11l-1-9A1 1 0 0015 7h-1V6a4 4 0 00-4-4zm2 5V6a2 2 0 10-4 0v1h4zm-6 3a1 1 0 112 0 1 1 0 01-2 0zm7-1a1 1 0 100 2 1 1 0 000-2z" clip-rule="evenodd"/></svg>
             </div>
-            <h3 class="text-gray-500 text-sm font-medium mb-2">Total Expense</h3>
+            <h3 class="text-gray-500 text-sm font-medium mb-2">Total Expense ({{ $selectedYear }})</h3>
             <p class="text-3xl font-bold text-gray-900 mb-2">Rp {{ number_format($totalExpense, 0, ',', '.') }}</p>
             <p class="text-red-600 text-sm font-semibold">↗ Total pengeluaran</p>
         </div>
@@ -56,16 +77,16 @@
             <div class="bg-gradient-to-br from-indigo-400 to-indigo-600 p-3 rounded-2xl w-fit mb-4">
                 <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20"><path fill-rule="evenodd" d="M4 4a2 2 0 00-2 2v4a2 2 0 002 2V6h10a2 2 0 00-2-2H4zm2 6a2 2 0 012-2h8a2 2 0 012 2v4a2 2 0 01-2 2H8a2 2 0 01-2-2v-4zm6 4a2 2 0 100-4 2 2 0 000 4z" clip-rule="evenodd"/></svg>
             </div>
-            <h3 class="text-gray-500 text-sm font-medium mb-2">Revenue YTD (After Tax)</h3>
+            <h3 class="text-gray-500 text-sm font-medium mb-2">Revenue {{ $selectedYear }} (After Tax)</h3>
             <p class="text-3xl font-bold text-gray-900 mb-2">Rp {{ number_format($totalRevenueYTDAfterTax, 0, ',', '.') }}</p>
-            <p class="text-indigo-600 text-sm font-semibold">Sudah dipotong pajak 11%</p>
+            <p class="text-indigo-600 text-sm font-semibold">Sudah dipotong pajak</p>
         </div>
 
         <div class="bg-white rounded-3xl shadow-lg p-6">
             <div class="bg-gradient-to-br from-teal-400 to-teal-600 p-3 rounded-2xl w-fit mb-4">
                 <svg class="w-7 h-7 text-white" fill="currentColor" viewBox="0 0 20 20"><path d="M8.433 7.418c.155-.103.346-.196.567-.267v1.698a2.305 2.305 0 01-.567-.267C8.07 8.34 8 8.114 8 8c0-.114.07-.34.433-.582zM11 12.849v-1.698c.22.071.412.164.567.267.364.243.433.468.433.582 0 .114-.07.34-.433.582a2.305 2.305 0 01-.567.267z"/></svg>
             </div>
-            <h3 class="text-gray-500 text-sm font-medium mb-2">Total Pendapatan</h3>
+            <h3 class="text-gray-500 text-sm font-medium mb-2">Total Pendapatan ({{ $selectedYear }})</h3>
             <p class="text-3xl font-bold text-gray-900 mb-2">Rp {{ number_format($totalPendapatan, 0, ',', '.') }}</p>
             <p class="text-teal-600 text-sm font-semibold">Akumulasi total</p>
         </div>
@@ -91,7 +112,7 @@
             <div class="bg-purple-50 p-2.5 rounded-xl w-fit mb-3">
                 <svg class="w-5 h-5 text-purple-600" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/></svg>
             </div>
-            <h3 class="text-gray-500 text-xs mb-1">Total Invoice</h3>
+            <h3 class="text-gray-500 text-xs mb-1">Invoice ({{ $selectedYear }})</h3>
             <p class="text-2xl font-bold">{{ $totalInvoices }}</p>
         </div>
         <div class="bg-white rounded-2xl shadow-lg p-5">
@@ -126,23 +147,23 @@
 
     {{-- Charts --}}
     <div class="bg-white rounded-3xl shadow-lg p-6 mb-6">
-        <h3 class="text-lg font-bold mb-4">Grafik Penjualan Bulanan</h3>
+        <h3 class="text-lg font-bold mb-4">Grafik Penjualan Bulanan {{ $selectedYear }}</h3>
         <canvas id="salesChart" style="max-height: 300px;"></canvas>
     </div>
 
     <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-6">
         <div class="bg-white rounded-3xl shadow-lg p-6">
-            <h3 class="text-lg font-bold mb-4">Produk Penjualan Terbanyak</h3>
+            <h3 class="text-lg font-bold mb-4">Produk Penjualan Terbanyak {{ $selectedYear }}</h3>
             <canvas id="topProductsChart" style="max-height: 300px;"></canvas>
         </div>
         <div class="bg-white rounded-3xl shadow-lg p-6">
-            <h3 class="text-lg font-bold mb-4">Penjualan Berdasarkan Kategori</h3>
+            <h3 class="text-lg font-bold mb-4">Penjualan Berdasarkan Kategori {{ $selectedYear }}</h3>
             <canvas id="categoryChart" style="max-height: 300px;"></canvas>
         </div>
     </div>
 
     <div class="bg-white rounded-3xl shadow-lg p-6">
-        <h3 class="text-lg font-bold mb-4">Persentase Penjualan Produk</h3>
+        <h3 class="text-lg font-bold mb-4">Persentase Penjualan Produk {{ $selectedYear }}</h3>
         <canvas id="productPercentageChart" style="max-height: 350px;"></canvas>
     </div>
 </div>
@@ -153,6 +174,12 @@
 <script>
 (function() {
     'use strict';
+    
+    // Year Filter Handler
+    document.getElementById('yearFilter').addEventListener('change', function() {
+        const selectedYear = this.value;
+        window.location.href = '{{ route("admin.dashboard") }}?year=' + selectedYear;
+    });
     
     // Monthly Sales
     new Chart(document.getElementById('salesChart'), {
@@ -172,7 +199,26 @@
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } }
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Rp ' + context.parsed.y.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        callback: function(value) {
+                            return 'Rp ' + value.toLocaleString('id-ID');
+                        }
+                    }
+                }
+            }
         }
     });
 
@@ -191,7 +237,24 @@
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } }
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Terjual: ' + context.parsed.y + ' unit';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
         }
     });
 
@@ -210,7 +273,24 @@
         options: {
             responsive: true,
             maintainAspectRatio: false,
-            plugins: { legend: { display: false } }
+            plugins: { 
+                legend: { display: false },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            return 'Terjual: ' + context.parsed.y + ' unit';
+                        }
+                    }
+                }
+            },
+            scales: {
+                y: {
+                    beginAtZero: true,
+                    ticks: {
+                        stepSize: 1
+                    }
+                }
+            }
         }
     });
 
@@ -231,6 +311,17 @@
                 legend: {
                     position: 'bottom',
                     labels: { padding: 15, font: { size: 11 } }
+                },
+                tooltip: {
+                    callbacks: {
+                        label: function(context) {
+                            const label = context.label || '';
+                            const value = context.parsed || 0;
+                            const total = context.dataset.data.reduce((a, b) => a + b, 0);
+                            const percentage = ((value / total) * 100).toFixed(1);
+                            return label + ': ' + value + ' unit (' + percentage + '%)';
+                        }
+                    }
                 }
             }
         }

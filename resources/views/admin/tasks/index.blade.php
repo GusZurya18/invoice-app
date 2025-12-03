@@ -6,46 +6,92 @@
         
         <!-- Header Section with Filters -->
         <div class="bg-white shadow-sm rounded-2xl p-4 md:p-6 mb-6">
-            <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
-                <div class="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4">
-                    <a href="{{ route('admin.tasks.create') }}" 
-                       class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm transition duration-150">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                        </svg>
-                        Tambah Task Baru
-                    </a>
-                    
-                    <!-- Bulk Delete Button -->
-                    <button id="bulkDeleteBtn" 
-                            onclick="bulkDelete()"
-                            class="hidden items-center justify-center px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow-sm transition duration-150">
-                        <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
-                        </svg>
-                        Hapus (<span id="selectedCount">0</span>)
-                    </button>
-                    
+            <div class="flex flex-col space-y-4">
+                <!-- Top Row: Add Button and Bulk Delete -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
+                    <div class="flex flex-col md:flex-row md:items-center space-y-3 md:space-y-0 md:space-x-4">
+                        <a href="{{ route('admin.tasks.create') }}" 
+                           class="inline-flex items-center justify-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm transition duration-150">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                            </svg>
+                            Tambah Task Baru
+                        </a>
+                        
+                        <!-- Bulk Delete Button -->
+                        <button id="bulkDeleteBtn" 
+                                onclick="bulkDelete()"
+                                class="hidden items-center justify-center px-5 py-2.5 bg-red-600 hover:bg-red-700 text-white text-sm font-medium rounded-lg shadow-sm transition duration-150">
+                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"/>
+                            </svg>
+                            Hapus (<span id="selectedCount">0</span>)
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Bottom Row: Filter Tabs and Search Bar -->
+                <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4">
                     <!-- Filter Tabs -->
                     <div class="flex items-center space-x-2 overflow-x-auto pb-2 md:pb-0">
-                        <a href="?status=" 
+                        <a href="?status={{ request('search') ? '&search=' . request('search') : '' }}" 
                            class="px-3 md:px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition whitespace-nowrap {{ request('status') == null || request('status') == '' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100' }}">
                             All
                         </a>
-                        <a href="?status=done" 
+                        <a href="?status=done{{ request('search') ? '&search=' . request('search') : '' }}" 
                            class="px-3 md:px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition whitespace-nowrap {{ request('status') == 'done' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100' }}">
                             Done
                         </a>
-                        <a href="?status=pending" 
+                        <a href="?status=pending{{ request('search') ? '&search=' . request('search') : '' }}" 
                            class="px-3 md:px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition whitespace-nowrap {{ request('status') == 'pending' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100' }}">
                             Pending
                         </a>
-                        <a href="?status=in_progress" 
+                        <a href="?status=in_progress{{ request('search') ? '&search=' . request('search') : '' }}" 
                            class="px-3 md:px-4 py-2 text-xs md:text-sm font-medium rounded-lg transition whitespace-nowrap {{ request('status') == 'in_progress' ? 'bg-indigo-100 text-indigo-700' : 'text-gray-700 hover:text-gray-900 hover:bg-gray-100' }}">
                             In Progress
                         </a>
                     </div>
+
+                    <!-- Search Bar -->
+                    <div class="relative flex-shrink-0 w-full md:w-80">
+                        <form action="" method="GET" class="relative">
+                            @if(request('status'))
+                                <input type="hidden" name="status" value="{{ request('status') }}">
+                            @endif
+                            <input type="text" 
+                                   name="search" 
+                                   value="{{ request('search') }}"
+                                   placeholder="Cari task, assignee..." 
+                                   class="w-full pl-10 pr-10 py-2.5 text-sm border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition">
+                            <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                <svg class="w-5 h-5 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                                </svg>
+                            </div>
+                            @if(request('search'))
+                                <a href="?{{ request('status') ? 'status=' . request('status') : '' }}" 
+                                   class="absolute inset-y-0 right-0 pr-3 flex items-center text-gray-400 hover:text-gray-600">
+                                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                    </svg>
+                                </a>
+                            @endif
+                        </form>
+                    </div>
                 </div>
+
+                <!-- Search Results Info -->
+                @if(request('search'))
+                    <div class="flex items-center justify-between text-sm">
+                        <span class="text-gray-600">
+                            Menampilkan hasil pencarian untuk: <span class="font-semibold text-gray-900">"{{ request('search') }}"</span>
+                        </span>
+                        <a href="?{{ request('status') ? 'status=' . request('status') : '' }}" 
+                           class="text-indigo-600 hover:text-indigo-700 font-medium">
+                            Reset pencarian
+                        </a>
+                    </div>
+                @endif
             </div>
         </div>
 
@@ -107,7 +153,7 @@
                                         <div class="text-xs text-gray-500 mt-0.5">{{ Str::limit($task->description, 50) }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
-                                        <div class="text-sm text-gray-900">{{ $task->assignedUser->name ?? 'Belum ditugaskan' }}</div>
+                                        <div class="text-sm text-gray-900">{{ $task->assignee->name ?? 'Belum ditugaskan' }}</div>
                                     </td>
                                     <td class="px-6 py-4 whitespace-nowrap">
                                         @if($task->status == 'done')
@@ -193,7 +239,6 @@
                     @foreach($tasks as $task)
                         <div class="p-4 hover:bg-gray-50 transition">
                             <div class="flex items-start space-x-3">
-                                <!-- Checkbox -->
                                 <div class="pt-1">
                                     <input type="checkbox" 
                                            class="task-checkbox w-4 h-4 text-indigo-600 border-gray-300 rounded focus:ring-indigo-500"
@@ -201,17 +246,14 @@
                                            onclick="updateBulkDeleteButton()">
                                 </div>
                                 
-                                <!-- Content -->
                                 <div class="flex-1 min-w-0">
-                                    <!-- Title -->
                                     <h3 class="text-sm font-semibold text-gray-900 mb-1">{{ $task->title }}</h3>
                                     <p class="text-xs text-gray-500 mb-2">{{ Str::limit($task->description, 60) }}</p>
                                     
-                                    <!-- Info Grid -->
                                     <div class="grid grid-cols-2 gap-2 mb-3 text-xs">
                                         <div>
                                             <span class="text-gray-500">Assigned:</span>
-                                            <span class="text-gray-900 font-medium ml-1">{{ Str::limit($task->assignedUser->name ?? 'Belum ditugaskan', 15) }}</span>
+                                            <span class="text-gray-900 font-medium ml-1">{{ Str::limit($task->assignee->name ?? 'Belum ditugaskan', 15) }}</span>
                                         </div>
                                         <div>
                                             <span class="text-gray-500">Priority:</span>
@@ -233,7 +275,6 @@
                                         </div>
                                     </div>
                                     
-                                    <!-- Status & Actions -->
                                     <div class="flex items-center justify-between">
                                         <div>
                                             @if($task->status == 'done')
@@ -260,7 +301,6 @@
                                             @endif
                                         </div>
                                         
-                                        <!-- Action Buttons -->
                                         <div class="flex items-center space-x-1">
                                             <a href="{{ route('admin.tasks.show', $task) }}" 
                                                class="w-8 h-8 flex items-center justify-center rounded-lg bg-green-500 hover:bg-green-600 text-white transition">
@@ -299,26 +339,60 @@
                 <!-- Pagination -->
                 @if($tasks->hasPages())
                     <div class="px-4 md:px-6 py-4 border-t border-gray-200">
-                        {{ $tasks->links() }}
+                        {{ $tasks->appends(['search' => request('search'), 'status' => request('status')])->links() }}
                     </div>
                 @endif
             @else
                 <!-- Empty State -->
                 <div class="text-center py-12 md:py-16 px-6">
-                    <svg class="mx-auto h-16 md:h-24 w-16 md:w-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
-                    </svg>
-                    <h3 class="mt-4 text-base md:text-lg font-semibold text-gray-900">Belum ada task yang dibuat</h3>
-                    <p class="mt-2 text-sm text-gray-500">Klik "Tambah Task Baru" untuk membuat task pertama</p>
-                    <div class="mt-6">
-                        <a href="{{ route('admin.tasks.create') }}" 
-                           class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm transition">
-                            <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
-                            </svg>
-                            Tambah Task Baru
-                        </a>
-                    </div>
+                    @if(request('search'))
+                        <svg class="mx-auto h-16 md:h-24 w-16 md:w-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z"/>
+                        </svg>
+                        <h3 class="mt-4 text-base md:text-lg font-semibold text-gray-900">Tidak ada hasil yang ditemukan</h3>
+                        <p class="mt-2 text-sm text-gray-500">Kami tidak dapat menemukan task dengan kata kunci "<span class="font-semibold">{{ request('search') }}</span>"</p>
+                        <div class="mt-6 flex flex-col sm:flex-row gap-3 justify-center items-center">
+                            <a href="?{{ request('status') ? 'status=' . request('status') : '' }}" 
+                               class="inline-flex items-center px-4 py-2 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg transition">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
+                                </svg>
+                                Hapus Pencarian
+                            </a>
+                            <a href="{{ route('admin.tasks.create') }}" 
+                               class="inline-flex items-center px-4 py-2 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg transition">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                Tambah Task Baru
+                            </a>
+                        </div>
+                    @else
+                        <svg class="mx-auto h-16 md:h-24 w-16 md:w-24 text-gray-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                        <h3 class="mt-4 text-base md:text-lg font-semibold text-gray-900">
+                            {{ request('status') ? 'Tidak ada task dengan status ' . ucfirst(str_replace('_', ' ', request('status'))) : 'Belum ada task yang dibuat' }}
+                        </h3>
+                        <p class="mt-2 text-sm text-gray-500">
+                            {{ request('status') ? 'Belum ada task dengan status tersebut' : 'Klik "Tambah Task Baru" untuk membuat task pertama' }}
+                        </p>
+                        <div class="mt-6">
+                            @if(request('status'))
+                                <a href="?" 
+                                   class="inline-flex items-center px-5 py-2.5 bg-white border border-gray-300 hover:bg-gray-50 text-gray-700 text-sm font-medium rounded-lg transition mr-3">
+                                    Lihat Semua Task
+                                </a>
+                            @endif
+                            <a href="{{ route('admin.tasks.create') }}" 
+                               class="inline-flex items-center px-5 py-2.5 bg-indigo-600 hover:bg-indigo-700 text-white text-sm font-medium rounded-lg shadow-sm transition">
+                                <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6v6m0 0v6m0-6h6m-6 0H6"/>
+                                </svg>
+                                Tambah Task Baru
+                            </a>
+                        </div>
+                    @endif
                 </div>
             @endif
         </div>

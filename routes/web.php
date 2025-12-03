@@ -12,6 +12,7 @@ use App\Http\Controllers\Admin\TaskController as AdminTaskController;
 use App\Http\Controllers\User\TaskController as UserTaskController;
 use App\Http\Controllers\TaskFileController;
 use App\Http\Controllers\TaskCommentController;
+use App\Http\Controllers\Admin\CompanySettingController;
 
 /*
 |--------------------------------------------------------------------------
@@ -45,6 +46,9 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
     
     // Users Management
     Route::resource('users', UserController::class);
+
+    Route::get('/company-settings', [CompanySettingController::class, 'edit'])->name('company-settings.edit');
+    Route::put('/company-settings', [CompanySettingController::class, 'update'])->name('company-settings.update');
     
     // ⭐ TASK ROUTES - PENTING: Bulk delete HARUS sebelum Route::resource
     Route::delete('tasks/bulk-destroy', [AdminTaskController::class, 'bulkDestroy'])->name('tasks.bulk-destroy');
@@ -78,8 +82,9 @@ Route::middleware(['auth','isUser'])->group(function () {
     Route::delete('/invoices/bulk-delete', [InvoiceController::class, 'bulkDelete'])->name('invoices.bulk-delete');
     Route::resource('invoices', InvoiceController::class);
     Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
-    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])->name('invoices.show');
-
+    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])
+        ->name('invoices.show');
+        
     // Customer
     Route::resource('customers', CustomerController::class);
 

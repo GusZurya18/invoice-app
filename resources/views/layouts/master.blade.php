@@ -189,7 +189,7 @@
                         <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z"/>
                         <path fill-rule="evenodd" d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3h8v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 112 0v1h3a1 1 0 110 2H9.5a1 1 0 01-1-1V9z"/>
                     </svg>
-                    {{ __('Invoice') }}
+                    {{ __('Invoice.invoice') }}
                 </a>
                
                 <a href="{{ route('customers.index') }}" class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('customers.*') ? 'text-white bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-purple-600 via-purple-700 to-indigo-800' }} rounded-lg transition-colors">

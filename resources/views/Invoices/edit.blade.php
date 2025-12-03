@@ -82,7 +82,7 @@
                         </div>
                     </div>
 
-                    <!-- Date & Discount Section -->
+                    <!-- Date & Discount And Tax Section  -->
                     <div class="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
                         <h2 class="text-xl font-semibold text-gray-900 mb-4">Invoice Details</h2>
                         
@@ -115,6 +115,29 @@
                                         class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors">
                                     <span class="absolute right-4 top-1/2 transform -translate-y-1/2 text-gray-500 font-medium">%</span>
                                 </div>
+                            </div>
+
+                            <div class="md:col-span-2">
+                                <label for="tax_rate" class="block text-sm font-medium text-gray-700 mb-2">
+                                    Tax Rate (%)
+                                </label>
+                                <input 
+                                    type="number" 
+                                    id="tax_rate" 
+                                    name="tax_rate" 
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors" 
+                                    value="{{ old('tax_rate', $invoice->tax_rate ?? $company->tax_rate) }}" 
+                                    min="0" 
+                                    max="100" 
+                                    step="0.01"
+                                >
+                                <p class="mt-2 text-sm text-gray-500">
+                                    💡 Current: {{ number_format($invoice->tax_rate ?? $company->tax_rate, 2) }}%. 
+                                    Company default: {{ number_format($company->tax_rate, 2) }}%.
+                                </p>
+                                @error('tax_rate')
+                                    <p class="mt-1 text-sm text-red-600">{{ $message }}</p>
+                                @enderror
                             </div>
                         </div>
                     </div>
@@ -247,6 +270,18 @@
                                     <span id="discount-amount-display" class="text-red-600 font-semibold">-Rp 0</span>
                                 </div>
 
+                                <!-- Subtotal After Discount -->
+                                <div class="flex justify-between items-center py-2" id="subtotal-after-discount-row">
+                                    <span class="text-gray-600 font-medium">After Discount</span>
+                                    <span id="subtotal-after-discount" class="font-bold text-gray-900">Rp 0</span>
+                                </div>
+
+                                <!-- Tax Row -->
+                                <div class="flex justify-between items-center py-2" id="tax-row">
+                                    <span class="text-gray-600">Tax (<span id="tax-percent-display">0</span>%)</span>
+                                    <span id="tax-amount-display" class="text-green-600 font-semibold">+Rp 0</span>
+                                </div>
+
                                 <hr class="border-gray-300 my-3">
 
                                 <!-- Grand Total -->
@@ -302,7 +337,7 @@
 <script>
 (function(){
     let idx = {{ $invoice->items->count() }};
-    
+
     function formatRupiah(amount) {
         return new Intl.NumberFormat('id-ID', {
             style: 'currency',
@@ -314,27 +349,32 @@
     function recalc(){
         let subtotal = 0;
         
+        // 1. Hitung subtotal dari semua item
         document.querySelectorAll('#items-table tbody tr').forEach(r=>{
             let qty = parseFloat(r.querySelector('.qty').value) || 0;
             let price = parseFloat(r.querySelector('.product-select').selectedOptions[0]?.dataset.price) || 0;
+
             r.querySelector('.unit-price').textContent = formatRupiah(price);
             let total = qty * price;
             r.querySelector('.line-total').textContent = formatRupiah(total);
+
             subtotal += total;
         });
 
+        // Update subtotal
         document.getElementById('subtotal-amount').textContent = formatRupiah(subtotal);
 
+        // 2. Hitung diskon
         let discountPercent = parseFloat(document.getElementById('discount').value) || 0;
         let discountAmount = 0;
-        let grandTotal = subtotal;
+        let subtotalAfterDiscount = subtotal;
 
         if(discountPercent > 0) {
             document.getElementById('discount-percent-row').style.display = 'flex';
             document.getElementById('discount-amount-row').style.display = 'flex';
             
             discountAmount = (discountPercent / 100) * subtotal;
-            grandTotal = subtotal - discountAmount;
+            subtotalAfterDiscount = subtotal - discountAmount;
             
             document.getElementById('discount-percent-display').textContent = discountPercent + '%';
             document.getElementById('discount-amount-display').textContent = '-' + formatRupiah(discountAmount);
@@ -343,9 +383,28 @@
             document.getElementById('discount-amount-row').style.display = 'none';
         }
 
+        // Update subtotal after discount
+        document.getElementById('subtotal-after-discount').textContent = formatRupiah(subtotalAfterDiscount);
+
+        // 3. Hitung pajak (berdasarkan subtotal setelah diskon)
+        let taxRate = parseFloat(document.getElementById('tax_rate').value) || 0;
+        let taxAmount = 0;
+
+        if(taxRate > 0) {
+            taxAmount = (taxRate / 100) * subtotalAfterDiscount;
+            document.getElementById('tax-row').style.display = 'flex';
+            document.getElementById('tax-percent-display').textContent = taxRate.toFixed(2);
+            document.getElementById('tax-amount-display').textContent = '+' + formatRupiah(taxAmount);
+        } else {
+            document.getElementById('tax-row').style.display = 'none';
+        }
+
+        // 4. Grand Total = Subtotal - Diskon + Pajak
+        let grandTotal = subtotalAfterDiscount + taxAmount;
         document.getElementById('grand-total').textContent = formatRupiah(grandTotal);
     }
 
+    // Add row button
     document.getElementById('add-row').addEventListener('click', function(){
         let tbody = document.querySelector('#items-table tbody');
         let tr = document.querySelector('.item-row').cloneNode(true);
@@ -370,6 +429,7 @@
         recalc();
     });
 
+    // Remove row button
     document.querySelector('#items-table').addEventListener('click', function(e){
         if(e.target.closest('.remove-row')){
             let rows = document.querySelectorAll('#items-table tbody tr');
@@ -380,10 +440,13 @@
         }
     });
 
+    // Event listeners untuk recalculate
     document.querySelector('#items-table').addEventListener('input', recalc);
     document.querySelector('#items-table').addEventListener('change', recalc);
     document.getElementById('discount').addEventListener('input', recalc);
+    document.getElementById('tax_rate').addEventListener('input', recalc);
 
+    // Initial calculation
     recalc();
 })();
 

@@ -16,13 +16,12 @@ class CustomerController extends Controller
         $activeCustomers = Customer::has('invoices')->count(); // punya invoice
         $inactiveCustomers = $totalCustomers - $activeCustomers;
 
-    return view('customers.index', compact(
-        'customers',
-        'totalCustomers','activeCustomers','inactiveCustomers'
-    ));
-
-        $customers = Customer::latest()->get();
-        return view('customers.index', compact('customers'));
+        return view('customers.index', compact(
+            'customers',
+            'totalCustomers',
+            'activeCustomers',
+            'inactiveCustomers'
+        ));
     }
 
     public function create()
@@ -32,17 +31,28 @@ class CustomerController extends Controller
 
     public function store(Request $request)
     {
-        $request->validate([
-            'name'  => 'required',
-            'email' => 'required|email|unique:customers',
-            'phone' => 'nullable',
-            'address' => 'nullable',
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
+            'email' => 'required|email|unique:customers,email',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
             'status' => 'required|in:active,inactive',
         ]);
 
-        Customer::create($request->all());
+        $customer = Customer::create($validated);
 
-        return redirect()->route('customers.index')->with('success', 'Customer berhasil dibuat!');
+        // Jika request dari AJAX (dari modal di invoice create)
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'customer' => $customer,
+                'message' => 'Customer berhasil dibuat!'
+            ], 201);
+        }
+
+        // Jika request biasa (dari halaman customer create)
+        return redirect()->route('customers.index')
+            ->with('success', 'Customer berhasil dibuat!');
     }
 
     public function show(Customer $customer)
@@ -57,21 +67,42 @@ class CustomerController extends Controller
 
     public function update(Request $request, Customer $customer)
     {
-        $request->validate([
-            'name'  => 'required',
+        $validated = $request->validate([
+            'name'  => 'required|string|max:255',
             'email' => 'required|email|unique:customers,email,'.$customer->id,
-            'phone' => 'nullable',
-            'address' => 'nullable',
+            'phone' => 'nullable|string|max:20',
+            'address' => 'nullable|string',
+            'status' => 'required|in:active,inactive',
         ]);
 
-        $customer->update($request->all());
+        $customer->update($validated);
 
-        return redirect()->route('customers.index')->with('success', 'Customer berhasil diupdate!');
+        // Jika request dari AJAX
+        if ($request->expectsJson() || $request->ajax()) {
+            return response()->json([
+                'success' => true,
+                'customer' => $customer,
+                'message' => 'Customer berhasil diupdate!'
+            ]);
+        }
+
+        return redirect()->route('customers.index')
+            ->with('success', 'Customer berhasil diupdate!');
     }
 
     public function destroy(Customer $customer)
     {
         $customer->delete();
-        return redirect()->route('customers.index')->with('success', 'Customer berhasil dihapus!');
+        
+        // Jika request dari AJAX
+        if (request()->expectsJson() || request()->ajax()) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Customer berhasil dihapus!'
+            ]);
+        }
+
+        return redirect()->route('customers.index')
+            ->with('success', 'Customer berhasil dihapus!');
     }
 }

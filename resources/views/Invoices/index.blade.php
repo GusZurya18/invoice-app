@@ -128,7 +128,7 @@
                     </div>
                     
                     {{-- Date Filter --}}
-                    <input type="month" id="dateFilter"
+                    <input type="month" id="dateFilterMobile"
                            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-all duration-300 border-0 focus:ring-2 focus:ring-purple-500 flex-shrink-0">
                 </div>
             </div>
@@ -169,7 +169,7 @@
                     </div>
                     
                     {{-- Date Filter --}}
-                    <input type="month" id="dateFilter"
+                    <input type="month" id="dateFilterDesktop"
                            class="px-3 py-2 text-sm bg-gray-100 hover:bg-gray-200 text-gray-700 font-medium rounded-lg transition-all duration-300 border-0 focus:ring-2 focus:ring-purple-500 flex-shrink-0">
                 </div>
             </div>
@@ -623,7 +623,8 @@ document.addEventListener('DOMContentLoaded', function() {
     const searchInputTop = document.getElementById('searchInputTop');
     const searchInputBottom = document.getElementById('searchInputBottom');
     const filterTabs = document.querySelectorAll('.filter-tab');
-    const dateFilter = document.getElementById('dateFilter');
+    const dateFilterMobile = document.getElementById('dateFilterMobile');
+    const dateFilterDesktop = document.getElementById('dateFilterDesktop');
     const tableBody = document.getElementById('tableBody');
     const noResults = document.getElementById('noResults');
     const mobileCardsContainer = document.getElementById('mobileCards');
@@ -673,7 +674,7 @@ document.addEventListener('DOMContentLoaded', function() {
 
     function init() {
         allRows = Array.from(tableBody?.querySelectorAll('tr:not(#emptyState)') || []);
-        allMobileCardsArray = Array.from(mobileCardsContainer?.querySelectorAll('.mobile-card') || []);
+        allMobileCardsArray = Array.from(mobileCardsContainer?.querySelectorAll('.mobile-card:not(#emptyStateMobile)') || []);
         updatePagination();
         initializeTabStyling();
         checkViewport();
@@ -859,11 +860,27 @@ document.addEventListener('DOMContentLoaded', function() {
         });
     }
 
-    dateFilter.addEventListener('change', function() {
-        currentDate = this.value;
-        currentPage = 1;
-        filterInvoices();
-    });
+    // Date Filter - Mobile
+    if (dateFilterMobile) {
+        dateFilterMobile.addEventListener('change', function() {
+            currentDate = this.value;
+            // Sinkronkan dengan date filter desktop
+            if (dateFilterDesktop) dateFilterDesktop.value = this.value;
+            currentPage = 1;
+            filterInvoices();
+        });
+    }
+
+    // Date Filter - Desktop
+    if (dateFilterDesktop) {
+        dateFilterDesktop.addEventListener('change', function() {
+            currentDate = this.value;
+            // Sinkronkan dengan date filter mobile
+            if (dateFilterMobile) dateFilterMobile.value = this.value;
+            currentPage = 1;
+            filterInvoices();
+        });
+    }
 
     function filterInvoices() {
         let filteredRows = allRows.filter(row => matchesFilters(row));
@@ -907,7 +924,7 @@ document.addEventListener('DOMContentLoaded', function() {
             }
         }
 
-        // Perbaikan filter date - pastikan format sama persis (Y-m)
+        // Filter date - pastikan format sama persis (Y-m)
         const matchesDate = currentDate === '' || date === currentDate;
 
         return matchesSearch && matchesFilter && matchesDate;
@@ -1036,8 +1053,8 @@ document.addEventListener('DOMContentLoaded', function() {
 
     nextBtn.addEventListener('click', () => {
         const items = isMobile ? allMobileCardsArray : allRows;
-        const visibleItems = items.filter(item => item.style.display !== 'none');
-        const totalPages = Math.ceil(visibleItems.length / itemsPerPage);
+        const filteredItems = items.filter(item => matchesFilters(item));
+        const totalPages = Math.ceil(filteredItems.length / itemsPerPage);
         if (currentPage < totalPages) {
             currentPage++;
             filterInvoices();

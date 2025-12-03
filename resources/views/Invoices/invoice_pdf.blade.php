@@ -3,8 +3,14 @@
 <head>
     <meta charset="utf-8">
     <meta http-equiv="Content-Type" content="text/html; charset=utf-8"/>
-    <title>Invoice {{ $invoice->code }}</title>
+    <title>{{ __('invoice.invoice') }} {{ $invoice->code }}</title>
     <style>
+        * {
+            -webkit-print-color-adjust: exact !important;
+            print-color-adjust: exact !important;
+            color-adjust: exact !important;
+        }
+        
         @page {
             margin: 10mm;
         }
@@ -13,205 +19,289 @@
             font-family: 'DejaVu Sans', Arial, sans-serif; 
             margin: 0;
             padding: 0;
-            color: #000;
+            background: white;
+            color: #1F2937;
             font-size: 9pt;
         }
         
-        .page-header {
-            text-align: center;
-            font-size: 8pt;
-            color: #666;
-            margin-bottom: 8px;
-            padding: 5px 0;
+        .container {
+            max-width: 210mm;
+            margin: 0 auto;
+            background: white;
         }
         
-        /* Header dengan gradient */
+        /* Header dengan Warna Solid - Ungu */
         .invoice-header {
-            background: linear-gradient(135deg, #5B6FE8 0%, #9B6FE8 50%, #D16FE8 100%);
+            background-color: #7C3AED;
             color: white;
-            padding: 18px 20px;
-            margin-bottom: 0;
+            padding: 20px 25px;
+            position: relative;
         }
         
-        .header-row {
-            display: table;
+        .header-content {
             width: 100%;
         }
         
         .header-left {
-            display: table-cell;
-            width: 65%;
-            vertical-align: middle;
+            width: 48%;
+            float: left;
         }
         
         .header-right {
-            display: table-cell;
-            width: 35%;
+            width: 48%;
+            float: right;
             text-align: right;
-            vertical-align: middle;
         }
         
-        .voice-title {
+        .invoice-title {
             margin: 0;
-            font-size: 22pt;
+            font-size: 28pt;
             font-weight: bold;
-            letter-spacing: 0.5px;
+            letter-spacing: 1px;
+            color: white;
         }
         
-        .no-invoice {
-            background-color: rgba(100, 100, 255, 0.4);
+        .invoice-number {
+            background-color: rgba(255, 255, 255, 0.25);
             display: inline-block;
-            padding: 5px 12px;
+            padding: 6px 12px;
+            border-radius: 4px;
+            font-size: 9pt;
             margin-top: 8px;
-            font-size: 8.5pt;
-            border-radius: 3px;
+            color: white;
         }
         
-        .tanggal-label {
-            font-size: 8.5pt;
-            margin: 0;
-            font-weight: normal;
+        .date-section {
+            text-align: right;
         }
         
-        .tanggal-besar {
+        .date-label {
+            font-size: 8.5pt;
+            margin: 0 0 4px 0;
+            color: white;
+        }
+        
+        .date-big {
             font-size: 40pt;
             font-weight: bold;
             line-height: 1;
-            margin: 5px 0 0 0;
-        }
-        
-        .bulan-tahun {
-            font-size: 9pt;
-            margin: 2px 0 0 0;
-        }
-        
-        /* Info Pelanggan */
-        .info-pelanggan {
-            background-color: #F5F6F8;
-            padding: 14px 18px;
             margin: 0;
+            color: white;
         }
         
-        .info-title {
-            margin: 0 0 10px 0;
-            font-size: 9.5pt;
-            font-weight: bold;
-            color: #000;
-        }
-        
-        .nama-pelanggan {
-            font-weight: bold;
+        .date-month {
             font-size: 10pt;
-            margin: 0 0 8px 0;
-            color: #000;
+            margin: 2px 0 0 0;
+            color: white;
         }
         
-        .info-detail {
+        .clearfix {
+            clear: both;
+        }
+        
+        /* Company Info */
+        .company-section {
+            padding: 15px 25px;
+            background-color: #F3F4F6;
+            border-bottom: 2px solid #E5E7EB;
+        }
+        
+        .company-logo {
+            max-width: 120px;
+            margin-bottom: 10px;
+        }
+        
+        .company-name {
+            font-size: 12pt;
+            font-weight: bold;
+            margin: 0 0 8px 0;
+            color: #111827;
+        }
+        
+        .company-detail {
+            font-size: 8.5pt;
+            margin: 3px 0;
+            color: #4B5563;
+        }
+        
+        /* Bill To Section */
+        .bill-to-section {
+            background-color: #EFF6FF;
+            padding: 18px 25px;
+            margin-top: 0;
+            border-left: 4px solid #3B82F6;
+        }
+        
+        .bill-to-title {
+            margin: 0 0 10px 0;
+            font-size: 10pt;
+            font-weight: bold;
+            color: #1E40AF;
+        }
+        
+        .customer-name {
+            font-weight: bold;
+            font-size: 12pt;
+            margin: 0 0 10px 0;
+            color: #111827;
+        }
+        
+        .customer-info {
             margin: 5px 0;
             font-size: 9pt;
-            color: #333;
+            color: #374151;
         }
         
-        /* Status Container */
-        .status-wrapper {
-            border: 2px solid #FFC107;
-            background-color: #FFFDF5;
-            padding: 14px 18px;
-            margin: 0;
+        /* Status and Date Info - Side by Side */
+        .info-container {
+            width: 100%;
+            padding: 15px 25px;
+            background-color: white;
         }
         
-        .status-line {
-            margin: 8px 0;
-            font-size: 9.5pt;
+        .info-left-col {
+            width: 48%;
+            float: left;
         }
         
-        .label-status {
+        .info-right-col {
+            width: 48%;
+            float: right;
+        }
+        
+        .status-box {
+            background-color: #F0FDF4;
+            border: 2px solid #86EFAC;
+            border-radius: 6px;
+            padding: 14px;
+        }
+        
+        .status-row {
+            margin: 10px 0;
+            font-size: 9pt;
+        }
+        
+        .status-label {
+            display: block;
+            color: #4B5563;
+            font-size: 8pt;
+            margin-bottom: 6px;
+            font-weight: 600;
+        }
+        
+        .status-badge {
             display: inline-block;
-            width: 155px;
-            color: #000;
-        }
-        
-        .badge-status {
-            display: inline-block;
-            padding: 4px 14px;
+            padding: 6px 14px;
             font-weight: bold;
             font-size: 8pt;
-            border-radius: 3px;
+            border-radius: 4px;
+            text-transform: uppercase;
         }
         
-        .badge-pending {
-            background-color: #FFF4CD;
-            color: #7C6F00;
+        .status-paid {
+            background-color: #D1FAE5;
+            color: #065F46;
         }
         
-        .badge-overdue {
-            background-color: #FFE5E8;
-            color: #8B0000;
+        .status-pending {
+            background-color: #FEF3C7;
+            color: #92400E;
         }
         
-        /* Date Info */
-        .date-info {
-            padding: 14px 18px 0 18px;
+        .status-draft {
+            background-color: #F3F4F6;
+            color: #374151;
         }
         
-        .date-line {
-            margin: 7px 0;
-            font-size: 9.5pt;
+        .status-cancelled {
+            background-color: #FEE2E2;
+            color: #991B1B;
         }
         
-        .label-date {
-            display: inline-block;
-            width: 110px;
-            color: #000;
+        .status-done {
+            background-color: #D1FAE5;
+            color: #065F46;
         }
         
-        .value-date {
+        .status-overdue {
+            background-color: #FEE2E2;
+            color: #991B1B;
+        }
+        
+        /* Date Info Box */
+        .date-box {
+            background-color: #F9FAFB;
+            border: 2px solid #E5E7EB;
+            border-radius: 6px;
+            padding: 14px;
+        }
+        
+        .date-info-row {
+            margin: 10px 0;
+            font-size: 9pt;
+        }
+        
+        .date-info-label {
+            display: block;
+            color: #6B7280;
+            font-size: 8pt;
+            margin-bottom: 4px;
+        }
+        
+        .date-info-value {
             font-weight: bold;
-            color: #000;
+            color: #111827;
+            font-size: 9pt;
         }
         
-        .red-date {
-            color: #DC3545;
+        .date-overdue {
+            color: #DC2626;
         }
         
-        /* Item Invoice */
+        /* Items Section */
+        .items-section {
+            padding: 15px 25px;
+        }
+        
         .section-title {
-            padding: 18px 18px 8px 18px;
-            font-size: 10pt;
+            font-size: 11pt;
             font-weight: bold;
-            color: #000;
-            margin: 0;
-        }
-        
-        .table-wrapper {
-            padding: 0 18px;
+            color: #1F2937;
+            margin: 0 0 12px 0;
+            padding-bottom: 8px;
+            border-bottom: 2px solid #3B82F6;
         }
         
         .item-table {
             width: 100%;
             border-collapse: collapse;
-            font-size: 9pt;
-            margin-bottom: 0;
+            margin-bottom: 15px;
         }
         
         .item-table thead {
-            background-color: #F8F9FA;
+            background-color: #DBEAFE;
         }
         
         .item-table th {
-            padding: 12px 10px;
+            padding: 10px 8px;
             text-align: left;
             font-weight: bold;
-            border: 1px solid #DEE2E6;
-            color: #000;
-            font-size: 9pt;
+            border: 1px solid #93C5FD;
+            color: #1E40AF;
+            font-size: 8pt;
+            text-transform: uppercase;
         }
         
         .item-table td {
-            padding: 12px 10px;
-            border: 1px solid #DEE2E6;
-            background-color: #FAFBFC;
-            color: #000;
+            padding: 10px 8px;
+            border: 1px solid #E5E7EB;
+            background-color: #FFFFFF;
+            color: #1F2937;
+            font-size: 9pt;
+        }
+        
+        .item-table tbody tr:nth-child(odd) td {
+            background-color: #F9FAFB;
         }
         
         .align-center {
@@ -222,264 +312,385 @@
             text-align: right;
         }
         
-        /* Catatan */
-        .catatan-wrapper {
-            padding: 12px 18px;
+        /* Notes Section */
+        .notes-section {
+            padding: 0 25px 15px 25px;
         }
         
-        .catatan-content {
-            background-color: #FFF8E6;
-            border-left: 3px solid #FF9800;
-            padding: 14px 16px;
+        .notes-box {
+            background-color: #FFFBEB;
+            border-left: 4px solid #F59E0B;
+            padding: 14px;
+            border-radius: 4px;
         }
         
-        .catatan-judul {
+        .notes-title {
             margin: 0 0 8px 0;
             font-size: 9.5pt;
             font-weight: bold;
-            color: #E65100;
+            color: #92400E;
         }
         
-        .catatan-text {
+        .notes-text {
             margin: 0;
             font-size: 9pt;
-            color: #000;
+            color: #78350F;
         }
         
-        /* Ringkasan */
-        .ringkasan-wrapper {
-            padding: 12px 18px;
+        /* Summary Section */
+        .summary-section {
+            padding: 0 25px 15px 25px;
         }
         
-        .ringkasan-content {
-            background-color: #F8F9FA;
-            border: 1px solid #DEE2E6;
-            padding: 16px 18px;
+        .summary-box {
+            background-color: #EFF6FF;
+            border: 2px solid #93C5FD;
+            border-radius: 6px;
+            padding: 16px;
         }
         
-        .ringkasan-judul {
+        .summary-title {
             margin: 0 0 14px 0;
             font-size: 10pt;
             font-weight: bold;
-            color: #000;
+            color: #1E40AF;
         }
         
-        .ringkasan-baris {
-            margin: 12px 0;
-            font-size: 9.5pt;
+        .summary-row {
+            width: 100%;
+            margin: 8px 0;
+            font-size: 9pt;
         }
         
-        .ringkasan-baris:after {
-            content: "";
-            display: table;
-            clear: both;
-        }
-        
-        .label-ringkasan {
+        .summary-label {
             float: left;
-            color: #000;
+            color: #374151;
         }
         
-        .value-ringkasan {
+        .summary-value {
             float: right;
             font-weight: bold;
-            color: #000;
+            color: #111827;
         }
         
-        .total-baris {
-            margin-top: 16px;
-            padding-top: 14px;
-            border-top: 1px solid #CCC;
+        .summary-discount .summary-value {
+            color: #DC2626;
         }
         
-        .total-baris .label-ringkasan {
+        .summary-tax .summary-value {
+            color: #059669;
+        }
+        
+        .summary-total {
+            margin-top: 12px;
+            padding-top: 12px;
+            border-top: 2px solid #1E40AF;
+        }
+        
+        .summary-total .summary-label {
             font-weight: bold;
             font-size: 10pt;
+            color: #111827;
         }
         
-        .total-baris .value-ringkasan {
-            color: #28A745;
+        .summary-total .summary-value {
+            color: #059669;
             font-size: 13pt;
+        }
+        
+        /* Bank Info */
+        .bank-section {
+            padding: 0 25px 15px 25px;
+        }
+        
+        .bank-box {
+            background-color: #DBEAFE;
+            border: 2px solid #60A5FA;
+            padding: 14px;
+            border-radius: 4px;
+        }
+        
+        .bank-title {
+            margin: 0 0 10px 0;
+            font-size: 9.5pt;
             font-weight: bold;
+            color: #1E40AF;
+        }
+        
+        .bank-detail {
+            margin: 5px 0;
+            font-size: 9pt;
+            color: #1F2937;
+        }
+        
+        .bank-detail strong {
+            color: #1E40AF;
+        }
+        
+        /* Payment Proof */
+        .payment-section {
+            padding: 0 25px 15px 25px;
+        }
+        
+        .payment-box {
+            background-color: #D1FAE5;
+            border: 2px solid #6EE7B7;
+            padding: 14px;
+            border-radius: 4px;
+        }
+        
+        .payment-title {
+            margin: 0 0 10px 0;
+            font-size: 9.5pt;
+            font-weight: bold;
+            color: #065F46;
+        }
+        
+        .payment-box img {
+            max-width: 200px;
+            border: 2px solid #6EE7B7;
+            border-radius: 4px;
         }
         
         /* Footer */
-        .footer-info {
+        .footer {
             text-align: center;
             font-size: 8pt;
-            color: #666;
-            margin-top: 20px;
-            padding: 14px 0;
-            border-top: 1px solid #DDD;
+            color: #6B7280;
+            padding: 15px 25px;
+            border-top: 2px solid #E5E7EB;
+            margin-top: 15px;
         }
         
-        /* Payment */
-        .payment-wrapper {
-            padding: 12px 18px;
-        }
-        
-        .payment-content {
-            background-color: #F8F9FA;
-            border: 1px solid #DEE2E6;
-            padding: 14px 16px;
-        }
-        
-        .payment-judul {
-            margin: 0 0 12px 0;
-            font-size: 9.5pt;
-            font-weight: bold;
-        }
-        
-        .payment-content img {
-            max-width: 200px;
-            border: 1px solid #CCC;
-        }
-        
-        .page-bottom {
-            position: fixed;
-            bottom: 5px;
-            left: 0;
-            right: 0;
+        .page-info {
             text-align: center;
             font-size: 7.5pt;
-            color: #999;
+            color: #9CA3AF;
+            margin-top: 10px;
         }
     </style>
 </head>
 <body>
-    <div class="page-header">
-        {{ date('n/j/y, g:i A') }}<span style="margin: 0 220px;"></span>Invoice Details
-    </div>
+    @php
+        $company = App\Models\CompanySetting::current();
+    @endphp
 
-    <!-- Header Gradient -->
-    <div class="invoice-header">
-        <div class="header-row">
-            <div class="header-left">
-                <h1 class="voice-title">≡ VOICE</h1>
-                <div class="no-invoice">No. Invoice: {{ $invoice->code }}</div>
-            </div>
-            <div class="header-right">
-                <p class="tanggal-label">Tanggal Invoice</p>
-                <p class="tanggal-besar">{{ str_pad($invoice->created_at->format('d'), 2, '0', STR_PAD_LEFT) }}</p>
-                <p class="bulan-tahun">{{ $invoice->created_at->format('M Y') }}</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- Info Pelanggan -->
-    <div class="info-pelanggan">
-        <p class="info-title">👤 Informasi Pelanggan</p>
-        <p class="nama-pelanggan">{{ $invoice->customer->name ?? $invoice->customer_name }}</p>
-        @if(isset($invoice->customer->email))
-        <p class="info-detail">✉ {{ $invoice->customer->email }}</p>
-        @endif
-        @if(isset($invoice->customer->phone))
-        <p class="info-detail">☎ {{ $invoice->customer->phone }}</p>
-        @endif
-        @if(isset($invoice->customer->address))
-        <p class="info-detail">📍 {{ $invoice->customer->address }}</p>
-        @endif
-    </div>
-
-    <!-- Status -->
-    <div class="status-wrapper">
-        @if(isset($invoice->status))
-        <div class="status-line">
-            <span class="label-status">Status Invoice</span>
-            <span class="badge-status badge-pending">{{ strtoupper($invoice->status) }}</span>
-        </div>
-        @endif
-        @if(isset($invoice->payment_status))
-        <div class="status-line">
-            <span class="label-status">Status Pembayaran</span>
-            <span class="badge-status badge-overdue">{{ strtoupper($invoice->payment_status) }}</span>
-        </div>
-        @endif
-    </div>
-
-    <!-- Date Info -->
-    <div class="date-info">
-        <div class="date-line">
-            <span class="label-date">Tanggal Mulai:</span>
-            <span class="value-date">{{ $invoice->created_at->format('d/m/Y') }}</span>
-        </div>
-        @if(isset($invoice->due_date))
-        <div class="date-line">
-            <span class="label-date">Jatuh Tempo:</span>
-            <span class="value-date red-date">{{ $invoice->due_date->format('d/m/Y') }}</span>
-        </div>
-        @endif
-    </div>
-
-    <!-- Item Invoice -->
-    <p class="section-title">📋 Item Invoice</p>
-    <div class="table-wrapper">
-        <table class="item-table">
-            <thead>
-                <tr>
-                    <th style="width: 8%;" class="align-center">NO</th>
-                    <th style="width: 42%;">PRODUK</th>
-                    <th style="width: 12%;" class="align-center">QTY</th>
-                    <th style="width: 19%;" class="align-right">HARGA SATUAN</th>
-                    <th style="width: 19%;" class="align-right">TOTAL</th>
-                </tr>
-            </thead>
-            <tbody>
-                @foreach($invoice->items as $index => $item)
-                <tr>
-                    <td class="align-center">{{ $index + 1 }}</td>
-                    <td>{{ $item->product_name }}</td>
-                    <td class="align-center">{{ $item->quantity }}</td>
-                    <td class="align-right">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
-                    <td class="align-right">Rp {{ number_format($item->total, 0, ',', '.') }}</td>
-                </tr>
-                @endforeach
-            </tbody>
-        </table>
-    </div>
-
-    <!-- Catatan -->
-    @if($invoice->notes)
-    <div class="catatan-wrapper">
-        <div class="catatan-content">
-            <p class="catatan-judul">📝 Catatan</p>
-            <p class="catatan-text">{{ $invoice->notes }}</p>
-        </div>
-    </div>
-    @endif
-
-    <!-- Ringkasan -->
-    <div class="ringkasan-wrapper">
-        <div class="ringkasan-content">
-            <p class="ringkasan-judul">📊 Ringkasan</p>
-            <div class="ringkasan-baris">
-                <span class="label-ringkasan">Subtotal:</span>
-                <span class="value-ringkasan">Rp {{ number_format($invoice->items->sum('total'), 0, ',', '.') }}</span>
-            </div>
-            <div class="ringkasan-baris total-baris">
-                <span class="label-ringkasan">Grand Total:</span>
-                <span class="value-ringkasan">Rp {{ number_format($invoice->total_amount, 0, ',', '.') }}</span>
+    <div class="container">
+        <!-- Header Section dengan Warna Ungu -->
+        <div class="invoice-header">
+            <div class="header-content">
+                <div class="header-left">
+                    <h1 class="invoice-title">{{ __('invoice.title') }}</h1>
+                    <div class="invoice-number">
+                        {{ __('invoice.invoice_number') }}: {{ $invoice->code }}
+                    </div>
+                </div>
+                <div class="header-right">
+                    <div class="date-section">
+                        <p class="date-label">{{ __('invoice.date') }}</p>
+                        <p class="date-big">{{ str_pad($invoice->created_at->format('d'), 2, '0', STR_PAD_LEFT) }}</p>
+                        <p class="date-month">{{ $invoice->created_at->format('M Y') }}</p>
+                    </div>
+                </div>
+                <div class="clearfix"></div>
             </div>
         </div>
-    </div>
 
-    <!-- Payment Proof -->
-    @if($invoice->payment_proof)
-    <div class="payment-wrapper">
-        <div class="payment-content">
-            <p class="payment-judul">💳 Bukti Pembayaran:</p>
-            <img src="{{ public_path('storage/'.$invoice->payment_proof) }}" alt="Payment Proof">
+        <!-- Company Info dengan Background Abu-abu -->
+        <div class="company-section">
+            @if($company->logo)
+                <img src="{{ public_path('storage/' . $company->logo) }}" class="company-logo" alt="Logo">
+            @endif
+            <p class="company-name">{{ $company->company_name }}</p>
+            <p class="company-detail">
+                {{ $company->address }}, {{ $company->city }}, {{ $company->province }} {{ $company->postal_code }}, {{ $company->country }}
+            </p>
+            <p class="company-detail">
+                {{ __('invoice.phone') }}: {{ $company->phone }} | {{ __('invoice.email') }}: {{ $company->email }}
+                @if($company->website) | {{ __('invoice.website') }}: {{ $company->website }}@endif
+            </p>
+            @if($company->npwp)
+            <p class="company-detail">NPWP: {{ $company->npwp }}</p>
+            @endif
         </div>
-    </div>
-    @endif
 
-    <!-- Footer -->
-    <div class="footer-info">
-        🕐 Invoice dibuat otomatis pada {{ $invoice->created_at->format('d/m/Y H:i') }} WIB
-    </div>
+        <!-- Bill To Section dengan Background Biru Muda -->
+        <div class="bill-to-section">
+            <p class="bill-to-title">{{ __('invoice.bill_to') }}</p>
+            <p class="customer-name">{{ $invoice->customer->name }}</p>
+            @if($invoice->customer->email)
+            <p class="customer-info">{{ __('invoice.email') }}: {{ $invoice->customer->email }}</p>
+            @endif
+            @if($invoice->customer->phone)
+            <p class="customer-info">{{ __('invoice.phone') }}: {{ $invoice->customer->phone }}</p>
+            @endif
+            @if($invoice->customer->address)
+            <p class="customer-info">{{ __('invoice.address') }}: {{ $invoice->customer->address }}</p>
+            @endif
+        </div>
 
-    <div class="page-bottom">
-        127.0.0.1:8000/invoices/{{ $invoice->id }}<span style="margin: 0 280px;"></span>1/1
+        <!-- Status and Date Info - Side by Side -->
+        <div class="info-container">
+            <!-- Left: Status dengan Background Hijau Muda -->
+            <div class="info-left-col">
+                <div class="status-box">
+                    <div class="status-row">
+                        <span class="status-label">{{ __('invoice.status') }}</span>
+                        <span class="status-badge status-{{ $invoice->status }}">
+                            {{ strtoupper(__('invoice.' . $invoice->status)) }}
+                        </span>
+                    </div>
+                    @if(isset($invoice->paid_status))
+                    <div class="status-row">
+                        <span class="status-label">{{ __('invoice.payment_status') }}</span>
+                        <span class="status-badge status-{{ $invoice->paid_status }}">
+                            {{ strtoupper(__('invoice.' . $invoice->paid_status)) }}
+                        </span>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            
+            <!-- Right: Date Info dengan Background Abu-abu -->
+            <div class="info-right-col">
+                <div class="date-box">
+                    @if($invoice->start_date)
+                    <div class="date-info-row">
+                        <span class="date-info-label">{{ __('invoice.start_date') }}</span>
+                        <span class="date-info-value">{{ $invoice->start_date->format('d/m/Y') }}</span>
+                    </div>
+                    @endif
+                    @if($invoice->due_date)
+                    <div class="date-info-row">
+                        <span class="date-info-label">{{ __('invoice.due_date') }}</span>
+                        <span class="date-info-value {{ $invoice->due_date->isPast() && $invoice->paid_status !== 'done' ? 'date-overdue' : '' }}">
+                            {{ $invoice->due_date->format('d/m/Y') }}
+                        </span>
+                    </div>
+                    @endif
+                </div>
+            </div>
+            <div class="clearfix"></div>
+        </div>
+
+        <!-- Items Section -->
+        <div class="items-section">
+            <p class="section-title">{{ __('invoice.items') }}</p>
+            <table class="item-table">
+                <thead>
+                    <tr>
+                        <th style="width: 8%;" class="align-center">{{ __('invoice.no') }}</th>
+                        <th style="width: 40%;">{{ __('invoice.product') }}</th>
+                        <th style="width: 12%;" class="align-center">{{ __('invoice.qty') }}</th>
+                        <th style="width: 20%;" class="align-right">{{ __('invoice.unit_price') }}</th>
+                        <th style="width: 20%;" class="align-right">{{ __('invoice.total') }}</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach($invoice->items as $index => $item)
+                    <tr>
+                        <td class="align-center">{{ $index + 1 }}</td>
+                        <td>{{ $item->product_name }}</td>
+                        <td class="align-center">{{ $item->quantity }}</td>
+                        <td class="align-right">Rp {{ number_format($item->unit_price, 0, ',', '.') }}</td>
+                        <td class="align-right"><strong>Rp {{ number_format($item->total, 0, ',', '.') }}</strong></td>
+                    </tr>
+                    @endforeach
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Notes dengan Background Kuning -->
+        @if($invoice->notes)
+        <div class="notes-section">
+            <div class="notes-box">
+                <p class="notes-title">{{ __('invoice.notes') }}</p>
+                <p class="notes-text">{{ $invoice->notes }}</p>
+            </div>
+        </div>
+        @endif
+
+        <!-- Payment Summary dengan Background Biru Muda -->
+        <div class="summary-section">
+            <div class="summary-box">
+                <p class="summary-title">{{ __('invoice.payment_summary') }}</p>
+                
+                <div class="summary-row">
+                    <span class="summary-label">{{ __('invoice.subtotal') }}:</span>
+                    <span class="summary-value">Rp {{ number_format($invoice->subtotal, 0, ',', '.') }}</span>
+                    <div class="clearfix"></div>
+                </div>
+                
+                @if($invoice->discount_percent > 0)
+                    <div class="summary-row">
+                        <span class="summary-label">{{ __('invoice.discount') }} ({{ number_format($invoice->discount_percent, 2) }}%):</span>
+                        <span class="summary-value">{{ number_format($invoice->discount_percent, 2) }}%</span>
+                        <div class="clearfix"></div>
+                    </div>
+                    
+                    <div class="summary-row summary-discount">
+                        <span class="summary-label">{{ __('invoice.discount_amount') }}:</span>
+                        <span class="summary-value">- Rp {{ number_format($invoice->discount_amount, 0, ',', '.') }}</span>
+                        <div class="clearfix"></div>
+                    </div>
+                    
+                    <div class="summary-row">
+                        <span class="summary-label">{{ __('invoice.subtotal_after_discount') }}:</span>
+                        <span class="summary-value">Rp {{ number_format($invoice->subtotal_after_discount, 0, ',', '.') }}</span>
+                        <div class="clearfix"></div>
+                    </div>
+                @endif
+                
+                @if($invoice->tax_rate > 0)
+                    <div class="summary-row">
+                        <span class="summary-label">{{ __('invoice.tax') }} ({{ number_format($invoice->tax_rate, 2) }}%):</span>
+                        <span class="summary-value">{{ number_format($invoice->tax_rate, 2) }}%</span>
+                        <div class="clearfix"></div>
+                    </div>
+                    
+                    <div class="summary-row summary-tax">
+                        <span class="summary-label">{{ __('invoice.tax_amount') }}:</span>
+                        <span class="summary-value">+ Rp {{ number_format($invoice->tax_amount, 0, ',', '.') }}</span>
+                        <div class="clearfix"></div>
+                    </div>
+                @endif
+                
+                <div class="summary-row summary-total">
+                    <span class="summary-label">{{ strtoupper(__('invoice.grand_total')) }}:</span>
+                    <span class="summary-value">Rp {{ number_format($invoice->grand_total, 0, ',', '.') }}</span>
+                    <div class="clearfix"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Bank Info dengan Background Biru -->
+        <div class="bank-section">
+            <div class="bank-box">
+                <p class="bank-title">{{ __('invoice.payment_info') }}</p>
+                <p class="bank-detail"><strong>{{ __('invoice.bank_name') }}:</strong> {{ $company->bank_name }}</p>
+                <p class="bank-detail"><strong>{{ __('invoice.account_number') }}:</strong> {{ $company->account_number }}</p>
+                <p class="bank-detail"><strong>{{ __('invoice.account_holder') }}:</strong> {{ $company->account_holder_name }}</p>
+            </div>
+        </div>
+
+        <!-- Payment Proof dengan Background Hijau -->
+        @if($invoice->payment_proof)
+        <div class="payment-section">
+            <div class="payment-box">
+                <p class="payment-title">{{ __('invoice.payment_proof') }}</p>
+                <img src="{{ public_path('storage/'.$invoice->payment_proof) }}" alt="{{ __('invoice.payment_proof') }}">
+            </div>
+        </div>
+        @endif
+
+        <!-- Footer -->
+        <div class="footer">
+            {{ __('invoice.auto_generated') }} {{ $invoice->created_at->format('d/m/Y H:i') }} WIB<br>
+            {{ __('invoice.thank_you') }}
+            <div class="page-info">
+                {{ __('invoice.invoice') }} {{ $invoice->code }} | {{ __('invoice.page') }} 1/1
+            </div>
+        </div>
     </div>
 </body>
 </html>

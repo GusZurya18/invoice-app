@@ -19,6 +19,18 @@ class TaskController extends Controller
             $query->where('status', $request->status);
         }
         
+        // Search functionality
+        if ($request->filled('search')) {
+            $searchTerm = $request->search;
+            $query->where(function($q) use ($searchTerm) {
+                $q->where('title', 'like', "%{$searchTerm}%")
+                  ->orWhere('description', 'like', "%{$searchTerm}%")
+                  ->orWhereHas('assignee', function($q) use ($searchTerm) {
+                      $q->where('name', 'like', "%{$searchTerm}%");
+                  });
+            });
+        }
+        
         $tasks = $query->latest()->paginate(10);
         
         return view('admin.tasks.index', compact('tasks'));

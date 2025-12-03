@@ -5,6 +5,7 @@ use App\Models\Invoice;
 use App\Models\InvoiceItem;
 use App\Models\Customer;
 use App\Models\Product;
+use App\Models\CompanySetting;
 use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
@@ -30,56 +31,69 @@ class InvoiceController extends Controller
         ));
     }
 
-    public function create() {
+public function create() {
         $customers = Customer::all();
         $products = Product::all();
-        return view('invoices.create', compact('customers','products'));
+        $company = CompanySetting::current(); // TAMBAHAN
+        
+        return view('invoices.create', compact('customers', 'products', 'company')); // UPDATED
     }
 
-    public function show(Invoice $invoice) {
+    public function show(Invoice $invoice, Request $request) {
+        $lang = $request->get('lang', 'id');
+        app()->setLocale($lang);
+
         return view('invoices.show', compact('invoice'));
     }
 
     public function store(Request $request) {
         $request->validate([
-            'customer_id'=>'required|exists:customers,id',
-            'status'=>'required',
-            'items'=>'required|array',
-            'items.*.product_id'=>'required|exists:products,id',
-            'items.*.quantity'=>'required|numeric|min:1',
-            'discount_percent'=>'nullable|numeric|min:0|max:100',
+            'customer_id' => 'required|exists:customers,id',
+            'status' => 'required',
+            'items' => 'required|array',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|numeric|min:1',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
+            'tax_rate' => 'nullable|numeric|min:0|max:100', // TAMBAHAN
             'start_date' => 'nullable|date',
             'due_date' => 'nullable|date|after_or_equal:start_date',
         ]);
 
         DB::transaction(function () use ($request) {
+            // Ambil tax rate: dari input atau default company
+            $company = CompanySetting::current();
+            $taxRate = $request->filled('tax_rate') ? $request->tax_rate : $company->tax_rate;
+            
             $invoice = Invoice::create([
-                'code'=>'INV'.time(),
-                'customer_id'=>$request->customer_id,
-                'status'=>$request->status,
-                'notes'=>$request->notes,
-                'discount_percent'=>$request->discount_percent ?? 0,
-                'payment_proof'=>$request->hasFile('payment_proof') ? $request->file('payment_proof')->store('payments','public') : null,
+                'code' => 'INV' . time(),
+                'customer_id' => $request->customer_id,
+                'status' => $request->status,
+                'notes' => $request->notes,
+                'discount_percent' => $request->discount_percent ?? 0,
+                'tax_rate' => $taxRate, // TAMBAHAN
+                'payment_proof' => $request->hasFile('payment_proof') 
+                    ? $request->file('payment_proof')->store('payments', 'public') 
+                    : null,
                 'start_date' => $request->start_date,
-                'due_date'   => $request->due_date,
-                'paid_status'=> 'pending',
+                'due_date' => $request->due_date,
+                'paid_status' => 'pending',
             ]);
 
-            $total = 0;
+            $subtotal = 0;
 
             foreach($request->items as $item){
                 $product = Product::lockForUpdate()->find($item['product_id']);
                 $lineTotal = $product->price * $item['quantity'];
 
                 $invoice->items()->create([
-                    'product_id'=>$product->id,
-                    'product_name'=>$product->name,
-                    'quantity'=>$item['quantity'],
-                    'unit_price'=>$product->price,
-                    'total'=>$lineTotal
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $product->price,
+                    'total' => $lineTotal
                 ]);
 
-                $total += $lineTotal;
+                $subtotal += $lineTotal;
 
                 if ($request->status === 'paid' && $product) {
                     if ($product->stock < $item['quantity']) {
@@ -93,12 +107,16 @@ class InvoiceController extends Controller
                 }
             }
 
-            // hitung diskon dan simpan total_amount
-            $discount = ($request->discount_percent ?? 0) * $total / 100;
-            $finalTotal = $total - $discount;
+            // Hitung total dengan diskon dan pajak
+            $discount = ($request->discount_percent ?? 0) * $subtotal / 100;
+            $subtotalAfterDiscount = $subtotal - $discount;
+            
+            $taxAmount = $subtotalAfterDiscount * ($taxRate / 100);
+            
+            $grandTotal = $subtotalAfterDiscount + $taxAmount;
 
             $invoice->update([
-                'total_amount' => $finalTotal
+                'total_amount' => $grandTotal
             ]);
         });
 
@@ -108,17 +126,20 @@ class InvoiceController extends Controller
     public function edit(Invoice $invoice) {
         $customers = Customer::all();
         $products = Product::all();
-        return view('invoices.edit', compact('invoice','customers','products'));
+        $company = CompanySetting::current(); // TAMBAHAN
+        
+        return view('invoices.edit', compact('invoice', 'customers', 'products', 'company')); // UPDATED
     }
 
     public function update(Request $request, Invoice $invoice) {
         $request->validate([
-            'customer_id'=>'required|exists:customers,id',
-            'status'=>'required',
-            'items'=>'required|array',
-            'items.*.product_id'=>'required|exists:products,id',
-            'items.*.quantity'=>'required|numeric|min:1',
-            'discount_percent'=>'nullable|numeric|min:0|max:100'
+            'customer_id' => 'required|exists:customers,id',
+            'status' => 'required',
+            'items' => 'required|array',
+            'items.*.product_id' => 'required|exists:products,id',
+            'items.*.quantity' => 'required|numeric|min:1',
+            'discount_percent' => 'nullable|numeric|min:0|max:100',
+            'tax_rate' => 'nullable|numeric|min:0|max:100', // TAMBAHAN
         ]);
 
         DB::transaction(function () use ($request, $invoice) {
@@ -137,35 +158,42 @@ class InvoiceController extends Controller
                 }
             }
 
+            // Ambil tax rate
+            $company = CompanySetting::current();
+            $taxRate = $request->filled('tax_rate') ? $request->tax_rate : $company->tax_rate;
+
             $invoice->update([
-                'customer_id'=>$request->customer_id,
-                'status'=>$request->status,
-                'notes'=>$request->notes,
-                'discount_percent'=>$request->discount_percent ?? 0,
-                'payment_proof'=>$request->hasFile('payment_proof') ? $request->file('payment_proof')->store('payments','public') : $invoice->payment_proof,
+                'customer_id' => $request->customer_id,
+                'status' => $request->status,
+                'notes' => $request->notes,
+                'discount_percent' => $request->discount_percent ?? 0,
+                'tax_rate' => $taxRate, // TAMBAHAN
+                'payment_proof' => $request->hasFile('payment_proof') 
+                    ? $request->file('payment_proof')->store('payments', 'public') 
+                    : $invoice->payment_proof,
                 'start_date' => $request->start_date,
-                'due_date'   => $request->due_date,
-                'paid_status'=> $request->status === 'paid' ? 'done' : 'pending',
+                'due_date' => $request->due_date,
+                'paid_status' => $request->status === 'paid' ? 'done' : 'pending',
             ]);
 
             // hapus item lama
             $invoice->items()->delete();
 
-            $total = 0;
+            $subtotal = 0;
 
             foreach($request->items as $item){
                 $product = Product::lockForUpdate()->find($item['product_id']);
                 $lineTotal = $product->price * $item['quantity'];
 
                 $invoice->items()->create([
-                    'product_id'=>$product->id,
-                    'product_name'=>$product->name,
-                    'quantity'=>$item['quantity'],
-                    'unit_price'=>$product->price,
-                    'total'=>$lineTotal
+                    'product_id' => $product->id,
+                    'product_name' => $product->name,
+                    'quantity' => $item['quantity'],
+                    'unit_price' => $product->price,
+                    'total' => $lineTotal
                 ]);
 
-                $total += $lineTotal;
+                $subtotal += $lineTotal;
 
                 if ($request->status === 'paid' && $product) {
                     if ($product->stock < $item['quantity']) {
@@ -178,12 +206,14 @@ class InvoiceController extends Controller
                 }
             }
 
-            // hitung diskon dan simpan total_amount
-            $discount = ($request->discount_percent ?? 0) * $total / 100;
-            $finalTotal = $total - $discount;
+            // Hitung total dengan diskon dan pajak
+            $discount = ($request->discount_percent ?? 0) * $subtotal / 100;
+            $subtotalAfterDiscount = $subtotal - $discount;
+            $taxAmount = $subtotalAfterDiscount * ($taxRate / 100);
+            $grandTotal = $subtotalAfterDiscount + $taxAmount;
 
             $invoice->update([
-                'total_amount' => $finalTotal
+                'total_amount' => $grandTotal
             ]);
         });
 
@@ -209,10 +239,13 @@ class InvoiceController extends Controller
         return back()->with('success','Invoice berhasil dihapus');
     }
 
-    public function pdf(Invoice $invoice)
+    public function pdf(Invoice $invoice, Request $request)
     {
+        $lang = $request->get('lang', 'id');
+        app()->setLocale($lang);
+        
         $pdf = Pdf::loadView('invoices.invoice_pdf', compact('invoice'));
-        return $pdf->download($invoice->code.'.pdf');
+        return $pdf->download($invoice->code . '_' . $lang . '.pdf');
     }
 
     public function bulkDelete(Request $request)
