@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.superadmin')
 
 @section('content')
     <div class="min-h-screen p-6">
@@ -225,7 +225,7 @@
             // Year Filter Handler
             document.getElementById('yearFilter').addEventListener('change', function() {
                 const selectedYear = this.value;
-                window.location.href = '{{ route('admin.dashboard') }}?year=' + selectedYear;
+                window.location.href = '{{ route('superadmin.dashboard') }}?year=' + selectedYear;
             });
 
             // Monthly Sales
@@ -275,10 +275,10 @@
             new Chart(document.getElementById('topProductsChart'), {
                 type: 'bar',
                 data: {
-                    labels: {!! json_encode($topProducts->pluck('product_name')) !!},
+                    labels: @json($topProducts->pluck('product_name')),
                     datasets: [{
                         label: 'Total Terjual',
-                        data: {!! json_encode($topProducts->pluck('total_sold')) !!},
+                        data: @json($topProducts->pluck('total_sold')),
                         backgroundColor: '#6366f1',
                         borderRadius: 8
                     }]
@@ -289,13 +289,6 @@
                     plugins: {
                         legend: {
                             display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return 'Terjual: ' + context.parsed.y + ' unit';
-                                }
-                            }
                         }
                     },
                     scales: {
@@ -313,10 +306,10 @@
             new Chart(document.getElementById('categoryChart'), {
                 type: 'bar',
                 data: {
-                    labels: {!! json_encode($categorySales->pluck('category')) !!},
+                    labels: @json($categorySales->pluck('category')),
                     datasets: [{
-                        label: 'Total',
-                        data: {!! json_encode($categorySales->pluck('total_sold')) !!},
+                        label: 'Total Terjual',
+                        data: @json($categorySales->pluck('total_sold')),
                         backgroundColor: '#ef4444',
                         borderRadius: 8
                     }]
@@ -327,13 +320,6 @@
                     plugins: {
                         legend: {
                             display: false
-                        },
-                        tooltip: {
-                            callbacks: {
-                                label: function(context) {
-                                    return 'Terjual: ' + context.parsed.y + ' unit';
-                                }
-                            }
                         }
                     },
                     scales: {

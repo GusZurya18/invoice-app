@@ -13,7 +13,7 @@ class TaskController extends Controller
         // tasks assigned to this user
         $tasks = Task::with(['creator','files','comments.user'])
                      ->where('user_id', $user->id)
-                     ->orWhere('created_by', $user->id) // optionally also show tasks created by user
+                     ->orWhere('created_by', $user->id) 
                      ->latest()
                      ->paginate(12);
         return view('tasks.index', compact('tasks'));

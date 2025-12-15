@@ -8,14 +8,17 @@ use App\Models\Category;
 use App\Models\Customer;
 use App\Models\Invoice;
 use App\Models\InvoiceItem;
+use App\Models\Task;
 use Illuminate\Support\Facades\Auth;
 
 class DashboardController extends Controller
 {
     public function index()
     {
-        $user = auth()->user();
-        $totalProducts = Product::count();
+        $user = Auth::user();
+        $totalTaskBulanIni = Task::whereMonth('start_date', now()->month)
+            ->whereYear('start_date', now()->year)
+            ->count();
         $totalCategories = Category::count();
         $totalCustomers = Customer::count();
         $totalInvoices = Invoice::count();
@@ -39,18 +42,18 @@ class DashboardController extends Controller
 
         //Data untuk chart penjualan category terbanyak
         $categorySales = InvoiceItem::selectRaw('categories.name as category, SUM(invoice_items.quantity) as total_sold')
-        ->join('products', 'invoice_items.product_id', '=', 'products.id')
-        ->join('categories', 'products.category_id', '=', 'categories.id')
-        ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
-        ->where('invoices.status', 'paid') // hitung hanya invoice yang sudah dibayar
-        ->groupBy('categories.name')
-        ->orderByDesc('total_sold')
-        ->limit(5)
-        ->get();
+            ->join('products', 'invoice_items.product_id', '=', 'products.id')
+            ->join('categories', 'products.category_id', '=', 'categories.id')
+            ->join('invoices', 'invoice_items.invoice_id', '=', 'invoices.id')
+            ->where('invoices.status', 'paid') // hitung hanya invoice yang sudah dibayar
+            ->groupBy('categories.name')
+            ->orderByDesc('total_sold')
+            ->limit(5)
+            ->get();
 
         return view('dashboard', compact(
             'user',
-            'totalProducts',
+            'totalTaskBulanIni',
             'totalCategories',
             'totalCustomers',
             'totalInvoices',

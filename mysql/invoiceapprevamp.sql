@@ -349,7 +349,7 @@ INSERT INTO `products` (`id`, `name`, `category_id`, `price`, `photo`, `stock`, 
 (15, 'Abandoned Apocalypse Industrial | 500 x 500', 4, 599000.00, 'products/hZUurjpYPh4YKBix8z3SFnqsc5IB8zEGz18mb2i6.jpg', 19, 'Minecraft build for zombie apocalypse game', '2025-10-07 19:13:28', '2025-10-21 20:04:16'),
 (16, 'Whirlygig Fallguys Map | 500 x Diameter', 4, 199000.00, 'products/b46GGBdA5x00QaZGOPbYZuLJwyV0cH7aFiqhHvKc.png', 97, 'Minecraft whirlygig map fallguys replika', '2025-10-07 19:14:25', '2025-10-22 20:22:37'),
 (17, 'Hell Dragon PVP Arena | 500 x 500 | PVP ARENA', 4, 399000.00, 'products/NPwP0xOW15vQGv8YOODWuGaltDgdryIl7qbdH1Z6.png', 99, 'Minecraft pvp arena with hell theme', '2025-10-07 19:15:13', '2025-10-07 19:15:13'),
-(18, 'Nocturnus Dominions HUB | 300 x 300 | BEST SALES!', 4, 999000.00, 'products/c3vTuN4TGvNkB2KZ5EGX2OdahK9tTVQhj5vcZfGy.png', 7, 'Minecraft structures with dark purple color and magical surroundings', '2025-10-07 19:16:24', '2025-10-22 20:22:37');
+(18, 'Nocturnus Dominions HUB | 300 x 300 | BEST SALES!', 4, 999000.00, 'products/c3vTuN4TGvNkB2KZ5EGX2OdahK9tTVQhj5vcZfGy.png', 7, 'Minecraft structures with dark blue color and magical surroundings', '2025-10-07 19:16:24', '2025-10-22 20:22:37');
 
 -- --------------------------------------------------------
 

@@ -7,19 +7,9 @@ class Invoice extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'code',
-        'customer_id',
-        'status',
-        'notes',
-        'discount_percent',
-        'tax_rate', // ← TAMBAHKAN INI
-        'payment_proof',
-        'start_date',
-        'due_date',
-        'paid_status',
-        'total_amount'
-    ];
+    public $table = 'invoices';
+
+    protected $guarded = ['id'];
 
     protected $casts = [
         'start_date' => 'date',

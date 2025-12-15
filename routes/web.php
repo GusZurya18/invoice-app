@@ -13,6 +13,8 @@ use App\Http\Controllers\User\TaskController as UserTaskController;
 use App\Http\Controllers\TaskFileController;
 use App\Http\Controllers\TaskCommentController;
 use App\Http\Controllers\Admin\CompanySettingController;
+use App\Http\Controllers\KelolaPerusahaanController;
+use App\Models\Customer;
 
 /*
 |--------------------------------------------------------------------------
@@ -20,6 +22,7 @@ use App\Http\Controllers\Admin\CompanySettingController;
 |--------------------------------------------------------------------------
 | Hanya bisa diakses user yang belum login
 */
+
 Route::get('/', function () {
     return view('welcome');
 })->name('home');
@@ -40,25 +43,48 @@ Route::get('/contact', function () {
 | Semua route untuk admin (prefix /admin)
 | Hanya bisa diakses oleh user dengan role "admin"
 */
+
+Route::middleware(['auth', 'isSuperAdmin'])->prefix('superadmin')->name('superadmin.')->group(function () {
+    Route::get('dashboard', [\App\Http\Controllers\SuperAdmin\DashboardController::class, 'index'])->name('dashboard');
+
+    Route::get('kelola-perusahaan', [KelolaPerusahaanController::class, 'index'])->name('kelola-perusahaan');
+    Route::get('kelola-perusahaan/create', [KelolaPerusahaanController::class, 'create'])->name('company.create');
+    Route::post('kelola-perusahaan/store', [KelolaPerusahaanController::class, 'store'])->name('company.store');
+    Route::get('kelola-perusahaan/edit/{pk}', [KelolaPerusahaanController::class, 'edit'])->name('company.edit');
+    Route::put('kelola-perusahaan/update/{pk}', [KelolaPerusahaanController::class, 'update'])->name('company.update');
+    Route::delete('kelola-perusahaan/delete', [KelolaPerusahaanController::class, 'destroy'])->name('company.destroy');
+
+    Route::resource('users', UserController::class);
+});
+
 Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(function () {
     // Dashboard
     Route::get('dashboard', [\App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-    
+
     // Users Management
-    Route::resource('users', UserController::class);
+    Route::resource('categories', CategoryController::class);
+    Route::resource('customers', CustomerController::class);
+    Route::resource('products', ProductController::class);
+    Route::resource('invoices', InvoiceController::class);
 
     Route::get('/company-settings', [CompanySettingController::class, 'edit'])->name('company-settings.edit');
     Route::put('/company-settings', [CompanySettingController::class, 'update'])->name('company-settings.update');
-    
+
     // ⭐ TASK ROUTES - PENTING: Bulk delete HARUS sebelum Route::resource
     Route::delete('tasks/bulk-destroy', [AdminTaskController::class, 'bulkDestroy'])->name('tasks.bulk-destroy');
     Route::resource('tasks', AdminTaskController::class);
-    
+
     // Task Files & Comments (Admin)
-    Route::post('tasks/{task}/files', [TaskFileController::class,'store'])->name('tasks.files.store');
-    Route::delete('tasks/files/{file}', [TaskFileController::class,'destroy'])->name('tasks.files.destroy');
-    Route::post('tasks/{task}/comments', [TaskCommentController::class,'store'])->name('tasks.comments.store');
-    Route::delete('tasks/comments/{comment}', [TaskCommentController::class,'destroy'])->name('tasks.comments.destroy');
+    Route::post('tasks/{task}/files', [TaskFileController::class, 'store'])->name('tasks.files.store');
+    Route::delete('tasks/files/{file}', [TaskFileController::class, 'destroy'])->name('tasks.files.destroy');
+    Route::post('tasks/{task}/comments', [TaskCommentController::class, 'store'])->name('tasks.comments.store');
+    Route::delete('tasks/comments/{comment}', [TaskCommentController::class, 'destroy'])->name('tasks.comments.destroy');
+
+    // Invoice
+    Route::delete('/invoices/bulk-delete', [InvoiceController::class, 'bulkDelete'])->name('invoices.bulk-delete');
+    Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
+    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])
+        ->name('invoices.show');
 });
 
 /*
@@ -69,7 +95,7 @@ Route::middleware(['auth', 'isAdmin'])->prefix('admin')->name('admin.')->group(f
 | Bisa juga admin masuk sini kalau perlu
 */
 
-Route::middleware(['auth','isUser'])->group(function () {
+Route::middleware(['auth', 'isUser'])->group(function () {
     // Dashboard user
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
@@ -78,21 +104,21 @@ Route::middleware(['auth','isUser'])->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-    // Invoice
-    Route::delete('/invoices/bulk-delete', [InvoiceController::class, 'bulkDelete'])->name('invoices.bulk-delete');
-    Route::resource('invoices', InvoiceController::class);
-    Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
-    Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])
-        ->name('invoices.show');
-        
+    // // Invoice
+    // Route::delete('/invoices/bulk-delete', [InvoiceController::class, 'bulkDelete'])->name('invoices.bulk-delete');
+    // Route::resource('invoices', InvoiceController::class);
+    // Route::get('invoices/{invoice}/pdf', [InvoiceController::class, 'pdf'])->name('invoices.pdf');
+    // Route::get('invoices/{invoice}', [InvoiceController::class, 'show'])
+    //     ->name('invoices.show');
+
     // Customer
     Route::resource('customers', CustomerController::class);
 
     // Category
-    Route::resource('categories', CategoryController::class);
+    // Route::resource('categories', CategoryController::class);
 
     // Product
-    Route::resource('products', ProductController::class);
+    // Route::resource('products', ProductController::class);
 });
 
 /*
@@ -101,19 +127,19 @@ Route::middleware(['auth','isUser'])->group(function () {
 |--------------------------------------------------------------------------
 | Route untuk user melihat dan mengelola task mereka
 */
-Route::middleware('auth')->group(function(){
+Route::middleware('auth')->group(function () {
     // My Tasks
-    Route::get('my-tasks', [UserTaskController::class,'index'])->name('tasks.my');
-    Route::get('tasks/{task}', [UserTaskController::class,'show'])->name('tasks.show');
-    Route::post('tasks/{task}/status', [UserTaskController::class,'updateStatus'])->name('tasks.update.status');
+    Route::get('my-tasks', [UserTaskController::class, 'index'])->name('tasks.my');
+    Route::get('tasks/{task}', [UserTaskController::class, 'show'])->name('tasks.show');
+    Route::post('tasks/{task}/status', [UserTaskController::class, 'updateStatus'])->name('tasks.update.status');
 
     // Task Files (User)
-    Route::post('tasks/{task}/files', [TaskFileController::class,'store'])->name('tasks.files.store');
-    Route::delete('tasks/files/{file}', [TaskFileController::class,'destroy'])->name('tasks.files.destroy');
+    Route::post('tasks/{task}/files', [TaskFileController::class, 'store'])->name('tasks.files.store');
+    Route::delete('tasks/files/{file}', [TaskFileController::class, 'destroy'])->name('tasks.files.destroy');
 
     // Task Comments (User)
-    Route::post('tasks/{task}/comments', [TaskCommentController::class,'store'])->name('tasks.comments.store');
-    Route::delete('tasks/comments/{comment}', [TaskCommentController::class,'destroy'])->name('tasks.comments.destroy');
+    Route::post('tasks/{task}/comments', [TaskCommentController::class, 'store'])->name('tasks.comments.store');
+    Route::delete('tasks/comments/{comment}', [TaskCommentController::class, 'destroy'])->name('tasks.comments.destroy');
 });
 
 /*
@@ -121,4 +147,4 @@ Route::middleware('auth')->group(function(){
 | Auth Routes (Laravel Breeze/Fortify/Jetstream)
 |--------------------------------------------------------------------------
 */
-require __DIR__.'/auth.php';
+require __DIR__ . '/auth.php';

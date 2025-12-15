@@ -1,4 +1,4 @@
-@extends('layouts.admin')
+@extends('layouts.superadmin')
 
 @section('content')
     <div class="p-4 md:p-8" style="background: ; min-height: 100vh;">
@@ -41,17 +41,17 @@
                     <div class="flex flex-col md:flex-row md:items-center md:justify-between space-y-3 md:space-y-0 gap-3">
                         <!-- Filter Tabs -->
                         <div class="flex items-center space-x-2 overflow-x-auto pb-2 md:pb-0">
-                            <a href="{{ route('admin.users.index', ['search' => request('search')]) }}" 
+                            <a href="{{ route('superadmin.users.index', ['search' => request('search')]) }}" 
                                class="px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap {{ request('role') == null ? 'text-white' : 'text-gray-600 hover:bg-gray-50' }}" 
                                style="{{ request('role') == null ? 'background-color: #6366f1;' : '' }}">
                                 All
                             </a>
-                            <a href="{{ route('admin.users.index', ['role' => 'admin', 'search' => request('search')]) }}" 
+                            <a href="{{ route('superadmin.users.index', ['role' => 'admin', 'search' => request('search')]) }}" 
                                class="px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap {{ request('role') == 'admin' ? 'text-white' : 'text-gray-600 hover:bg-gray-50' }}" 
                                style="{{ request('role') == 'admin' ? 'background-color: #6366f1;' : '' }}">
                                 Admin
                             </a>
-                            <a href="{{ route('admin.users.index', ['role' => 'user', 'search' => request('search')]) }}" 
+                            <a href="{{ route('superadmin.users.index', ['role' => 'user', 'search' => request('search')]) }}" 
                                class="px-3 md:px-4 py-2 rounded-lg text-xs md:text-sm font-medium whitespace-nowrap {{ request('role') == 'user' ? 'text-white' : 'text-gray-600 hover:bg-gray-50' }}" 
                                style="{{ request('role') == 'user' ? 'background-color: #6366f1;' : '' }}">
                                 User
@@ -60,7 +60,7 @@
 
                         <!-- Search Bar -->
                         <div class="flex items-center gap-2">
-                            <form action="{{ route('admin.users.index') }}" method="GET" class="flex-1 md:flex-none" id="searchForm">
+                            <form action="{{ route('superadmin.users.index') }}" method="GET" class="flex-1 md:flex-none" id="searchForm">
                                 <input type="hidden" name="role" value="{{ request('role') }}">
                                 <div class="relative flex items-center">
                                     <input type="text" 
@@ -82,7 +82,7 @@
                             </form>
 
                             @if(request('search'))
-                                <a href="{{ route('admin.users.index', ['role' => request('role')]) }}" 
+                                <a href="{{ route('superadmin.users.index', ['role' => request('role')]) }}" 
                                    class="p-2 rounded-lg hover:bg-gray-50 text-gray-600" title="Clear search">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
@@ -104,7 +104,7 @@
                                     <span class="text-blue-600">({{ $users->total() }} user ditemukan)</span>
                                 </span>
                             </div>
-                            <a href="{{ route('admin.users.index', ['role' => request('role')]) }}" 
+                            <a href="{{ route('superadmin.users.index', ['role' => request('role')]) }}" 
                                class="text-sm text-blue-600 hover:text-blue-800 font-medium">
                                 Hapus filter
                             </a>
@@ -163,7 +163,7 @@
                                 </td>
                                 <td class="p-4">
                                     <div class="flex items-center justify-center space-x-2">
-                                        <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" 
+                                        <form action="{{ route('superadmin.users.destroy', $user->id) }}" method="POST" 
                                               onsubmit="return confirm('Yakin hapus user ini?')" class="inline-block">
                                             @csrf
                                             @method('DELETE')
@@ -208,7 +208,7 @@
                                 <h3 class="text-base font-bold text-gray-900 mb-1">{{ $user->name }}</h3>
                                 <p class="text-sm text-gray-600">{{ $user->email }}</p>
                             </div>
-                            <form action="{{ route('admin.users.destroy', $user->id) }}" method="POST" 
+                            <form action="{{ route('superadmin.users.destroy', $user->id) }}" method="POST" 
                                   onsubmit="return confirm('Yakin hapus user ini?')" class="inline-block ml-3">
                                 @csrf
                                 @method('DELETE')
@@ -350,7 +350,7 @@
                     
                     <div class="flex flex-col sm:flex-row gap-3">
                         @if(request('search') || request('role'))
-                            <a href="{{ route('admin.users.index') }}" 
+                            <a href="{{ route('superadmin.users.index') }}" 
                                class="px-6 py-2.5 rounded-lg text-white text-sm font-medium hover:opacity-90 transition inline-flex items-center justify-center" 
                                style="background-color: #6366f1;">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -361,7 +361,7 @@
                         @endif
                         
                         @if(request('search'))
-                            <a href="{{ route('admin.users.index', ['role' => request('role')]) }}" 
+                            <a href="{{ route('superadmin.users.index', ['role' => request('role')]) }}" 
                                class="px-6 py-2.5 rounded-lg text-gray-700 text-sm font-medium hover:bg-gray-50 transition inline-flex items-center justify-center border" 
                                style="border-color: #e2e8f0;">
                                 <svg class="w-4 h-4 mr-2" fill="none" stroke="currentColor" viewBox="0 0 24 24">

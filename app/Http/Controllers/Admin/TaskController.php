@@ -12,39 +12,40 @@ class TaskController extends Controller
 {
     public function index(Request $request)
     {
-        $query = Task::with(['assignee', 'creator']);
-        
+        $userId = Auth::user()->id;
+        $query = Task::where('user_id', $userId)->with(['assignee', 'creator']);
+
         // Filter berdasarkan status
         if ($request->has('status') && $request->status != '') {
             $query->where('status', $request->status);
         }
-        
+
         // Search functionality
         if ($request->filled('search')) {
             $searchTerm = $request->search;
-            $query->where(function($q) use ($searchTerm) {
+            $query->where(function ($q) use ($searchTerm) {
                 $q->where('title', 'like', "%{$searchTerm}%")
-                  ->orWhere('description', 'like', "%{$searchTerm}%")
-                  ->orWhereHas('assignee', function($q) use ($searchTerm) {
-                      $q->where('name', 'like', "%{$searchTerm}%");
-                  });
+                    ->orWhere('description', 'like', "%{$searchTerm}%")
+                    ->orWhereHas('assignee', function ($q) use ($searchTerm) {
+                        $q->where('name', 'like', "%{$searchTerm}%");
+                    });
             });
         }
-        
+
         $tasks = $query->latest()->paginate(10);
-        
+
         return view('admin.tasks.index', compact('tasks'));
     }
 
     public function create()
     {
-        $users = User::where('role', 'user')->get();
+        $users = User::where('company_id', Auth::user()->company_id)->where('role', 'user')->get();
         return view('admin.tasks.create', compact('users'));
     }
 
     public function store(Request $request)
     {
-        
+
         $request->validate([
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
@@ -59,8 +60,8 @@ class TaskController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'user_id' => $request->user_id,
-            'start_date' => $request->start_date,  
-            'deadline' => $request->deadline,   
+            'start_date' => $request->start_date,
+            'deadline' => $request->deadline,
             'priority' => $request->priority,
             'status' => $request->status,
             'created_by' => Auth::id()
@@ -78,8 +79,8 @@ class TaskController extends Controller
     public function edit(Task $task)
     {
         $task->load(['assignee', 'creator', 'files', 'comments.user']);
-        $users = User::where('role', 'user')->get();
-        
+        $users = User::where('company_id', Auth::user()->company_id)->where('role', 'user')->get();
+
         return view('admin.tasks.edit', compact('task', 'users'));
     }
 
@@ -99,8 +100,8 @@ class TaskController extends Controller
             'title' => $request->title,
             'description' => $request->description,
             'user_id' => $request->user_id,
-            'start_date' => $request->start_date,  
-            'deadline' => $request->deadline, 
+            'start_date' => $request->start_date,
+            'deadline' => $request->deadline,
             'priority' => $request->priority,
             'status' => $request->status,
         ]);
@@ -127,19 +128,19 @@ class TaskController extends Controller
         $request->validate([
             'task_ids' => 'required|string'
         ]);
-        
+
         // Decode JSON
         $taskIds = json_decode($request->task_ids, true);
-        
+
         // Validasi hasil decode
         if (!is_array($taskIds) || empty($taskIds)) {
             return redirect()->back()->with('error', 'Tidak ada task yang dipilih');
         }
-        
+
         try {
             // Get tasks yang akan dihapus beserta files-nya
             $tasks = Task::with('files')->whereIn('id', $taskIds)->get();
-            
+
             // Hapus semua file terkait
             foreach ($tasks as $task) {
                 foreach ($task->files as $file) {
@@ -148,13 +149,12 @@ class TaskController extends Controller
                     }
                 }
             }
-            
+
             // Hapus tasks
             $deletedCount = Task::whereIn('id', $taskIds)->delete();
-            
+
             return redirect()->route('admin.tasks.index')
                 ->with('success', $deletedCount . ' task berhasil dihapus');
-                
         } catch (\Exception $e) {
             return redirect()->back()->with('error', 'Terjadi kesalahan saat menghapus task: ' . $e->getMessage());
         }

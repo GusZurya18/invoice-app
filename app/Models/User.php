@@ -20,6 +20,7 @@ class User extends Authenticatable
     protected $fillable = [
         'name',
         'email',
+        'company_id',
         'password',
         'role'
     ];
@@ -50,5 +51,15 @@ class User extends Authenticatable
     public function isAdmin(): bool
     {
         return strtolower($this->role ?? '') === 'admin';
+    }
+
+    public function isSuperAdmin(): bool
+    {
+        return strtolower($this->role ?? '') === 'superadmin';
+    }
+
+    public function company()
+    {
+        return $this->belongsTo(CompanySetting::class);
     }
 }

@@ -1,4 +1,4 @@
-@extends('layouts.master')
+@extends('layouts.admin')
 
 @section('title', 'Edit Invoice')
 
@@ -10,7 +10,7 @@
         <!-- Header -->
         <div class="mb-8">
             <div class="flex items-center gap-3 mb-2">
-                <a href="{{ route('invoices.index') }}" 
+                <a href="{{ route('admin.invoices.index') }}" 
                     class="p-2 hover:bg-gray-200 rounded-lg transition-colors">
                     <svg class="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/>
@@ -21,7 +21,7 @@
             <p class="text-gray-600 ml-14">Update invoice details and save changes</p>
         </div>
 
-        <form action="{{ route('invoices.update', $invoice) }}" method="POST" enctype="multipart/form-data">
+        <form action="{{ route('admin.invoices.update', $invoice) }}" method="POST" enctype="multipart/form-data">
             @csrf
             @method('PUT')
             
@@ -312,7 +312,7 @@
                                 </button>
 
                                 <!-- Cancel Button -->
-                                <a href="{{ route('invoices.index') }}"
+                                <a href="{{ route('admin.invoices.index') }}"
                                     class="w-full px-6 py-3 bg-gray-100 hover:bg-gray-200 text-gray-700 font-semibold rounded-xl transition-all duration-200 flex items-center justify-center gap-2">
                                     <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12"/>
@@ -327,7 +327,7 @@
         </form>
 
         <!-- Delete Form (Hidden) -->
-        <form id="delete-form" action="{{ route('invoices.destroy', $invoice) }}" method="POST" class="hidden">
+        <form id="delete-form" action="{{ route('admin.invoices.destroy', $invoice) }}" method="POST" class="hidden">
             @csrf
             @method('DELETE')
         </form>

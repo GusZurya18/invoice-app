@@ -4,7 +4,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin | @yield('title', 'InvoicePro')</title>
+    <title>Super Admin | @yield('title', 'InvoicePro')</title>
     @vite(['resources/css/app.css', 'resources/js/app.js'])
     <style>
         /* Custom styles for navigation */
@@ -166,109 +166,51 @@
     <!-- Main Container with proper layout -->
     <div class="flex min-h-screen">
         <!-- Fixed Sidebar -->
-        <div
-            class="sidebar fixed left-0 top-0 h-screen w-64 bg-white backdrop-blur-md p-5 z-10 overflow-y-auto shadow-lg">
+        <div class="sidebar fixed left-0 top-0 h-screen w-64 bg-white backdrop-blur-md p-5 z-10 overflow-y-auto shadow-lg">
             <!-- Logo -->
             <div class="flex items-center mb-6">
                 <div class="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center mr-3">
                     <svg class="w-5 h-5 text-white" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
                     </svg>
                 </div>
-                <span class="text-black font-semibold text-lg">Admin Panel</span>
+                <span class="text-black font-semibold text-lg">Super Admin Panel</span>
             </div>
 
             <!-- Navigation -->
             <nav class="space-y-2">
-                <a href="{{ route('admin.dashboard') }}"
-                    class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('admin.dashboard') ? 'text-white bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' }} rounded-lg transition-colors">
+                <a href="{{ route('superadmin.dashboard') }}" class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('superadmin.dashboard') ? 'text-white bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' }} rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
+                        <path d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6zM14 9a1 1 0 00-1 1v6a1 1 0 001 1h2a1 1 0 001-1v-6a1 1 0 00-1-1h-2z" />
                     </svg>
                     {{ __('Dashboard') }}
                 </a>
 
-                {{-- <a href="{{ route('admin.users.index') }}" class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('admin.users.*') ? 'text-white bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' }} rounded-lg transition-colors">
+                <a href="{{ route('superadmin.kelola-perusahaan')}}" class="nav-item flex items-center px-4 py-3 bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-lg transition-colors">
+                    <svg class="w-5 h-5 mr-3" xmlns="http://www.w3.org/2000/svg"
+                        viewBox="0 0 20 20" fill="currentColor">
+                        <path d="M10.75 7V3.5a.75.75 0 0 0-.75-.75H3.5A1.5 1.5 0 0 0 2 4.25v12.5c0 .966.784 1.75 1.75 1.75h12.5A1.75 1.75 0 0 0 18 16.75V8.75a.75.75 0 0 0-.75-.75H11.5a.75.75 0 0 1-.75-.75zM6 7.5h2v2H6v-2zm0 4h2v2H6v-2zm4-4h2v2h-2v-2zm0 4h2v2h-2v-2z" />
+                    </svg>
+
+                    {{ __('Kelola Perusahaan') }}
+                </a>
+
+                <a href="{{ route('superadmin.users.index') }}" class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('superadmin.users.*') ? 'text-white bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' }} rounded-lg transition-colors">
                     <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
                         <path d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
                     </svg>
                     {{ __('Kelola User') }}
-                </a> --}}
-
-                <a href="{{ route('admin.categories.index') }}"
-                    class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('admin.categories.*') ? 'text-white bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' }} rounded-lg transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M7 3a1 1 0 000 2h6a1 1 0 100-2H7zM4 7a1 1 0 011-1h10a1 1 0 110 2H5a1 1 0 01-1-1zM2 11a2 2 0 012-2h12a2 2 0 012 2v4a2 2 0 01-2 2H4a2 2 0 01-2-2v-4z" />
-                    </svg>
-                    {{ __('Kategori') }}
-                </a>
-
-                <a href="{{ route('admin.customers.index') }}"
-                    class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('admin.customers.*') ? 'text-white bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' }} rounded-lg transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M9 6a3 3 0 11-6 0 3 3 0 016 0zM17 6a3 3 0 11-6 0 3 3 0 016 0zM12.93 17c.046-.327.07-.66.07-1a6.97 6.97 0 00-1.5-4.33A5 5 0 0119 16v1h-6.07zM6 11a5 5 0 015 5v1H1v-1a5 5 0 015-5z" />
-                    </svg>
-                    {{ __('Kelola Pelanggan') }}
-                </a>
-
-                <a href="{{ route('admin.tasks.index') }}"
-                    class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('admin.tasks.*') ? 'text-white bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' }} rounded-lg transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    {{ __('Task User') }}
-                </a>
-
-                <a href="{{ route('admin.products.index') }}"
-                    class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('admin.products.*') ? 'text-white bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' }} rounded-lg transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path
-                            d="M3 4a1 1 0 011-1h12a1 1 0 011 1v2a1 1 0 01-1 1H4a1 1 0 01-1-1V4zM3 10a1 1 0 011-1h6a1 1 0 011 1v6a1 1 0 01-1 1H4a1 1 0 01-1-1v-6z" />
-                    </svg>
-                    {{ __('Produk') }}
-                </a>
-
-                <a href="{{ route('admin.invoices.index') }}"
-                    class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('admin.invoices.*') ? 'text-white bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' }} rounded-lg transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path d="M9 2a1 1 0 000 2h2a1 1 0 100-2H9z" />
-                        <path fill-rule="evenodd"
-                            d="M4 5a2 2 0 012-2v1a1 1 0 102 0V3h8v1a1 1 0 102 0V3a2 2 0 012 2v6a2 2 0 01-2 2H6a2 2 0 01-2-2V5zm3 4a1 1 0 112 0v1h3a1 1 0 110 2H9.5a1 1 0 01-1-1V9z" />
-                    </svg>
-                    {{ __('Invoice.invoice') }}
-                </a>
-
-                <a href="{{ route('admin.company-settings.edit') }}"
-                    class="nav-item flex items-center px-4 py-3 {{ request()->routeIs('admin.company-settings.*') ? 'text-white bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' : 'bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800' }} rounded-lg transition-colors">
-                    <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                        <path fill-rule="evenodd"
-                            d="M6 2a1 1 0 00-1 1v1H4a2 2 0 00-2 2v10a2 2 0 002 2h12a2 2 0 002-2V6a2 2 0 00-2-2h-1V3a1 1 0 10-2 0v1H7V3a1 1 0 00-1-1zm0 5a1 1 0 000 2h8a1 1 0 100-2H6z"
-                            clip-rule="evenodd" />
-                    </svg>
-                    {{ __('Data Perusahaan') }}
                 </a>
 
                 <!-- Settings Dropdown -->
                 <div class="settings-dropdown mt-8">
-                    <a href="#"
-                        class="flex items-center px-4 py-3 bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-lg transition-colors"
-                        onclick="toggleSettingsDropdown(event)">
+                    <a href="#" class="flex items-center px-4 py-3 bg-gray-200 text-black/80 hover:text-white/80 hover:bg-gradient-to-br from-blue-600 via-blue-700 to-indigo-800 rounded-lg transition-colors" onclick="toggleSettingsDropdown(event)">
                         <svg class="w-5 h-5 mr-3" fill="currentColor" viewBox="0 0 20 20">
-                            <path fill-rule="evenodd"
-                                d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" />
+                            <path fill-rule="evenodd" d="M11.49 3.17c-.38-1.56-2.6-1.56-2.98 0a1.532 1.532 0 01-2.286.948c-1.372-.836-2.942.734-2.106 2.106.54.886.061 2.042-.947 2.287-1.561.379-1.561 2.6 0 2.978a1.532 1.532 0 01.947 2.287c-.836 1.372.734 2.942 2.106 2.106a1.532 1.532 0 012.287.947c.379 1.561 2.6 1.561 2.978 0a1.533 1.533 0 012.287-.947c1.372.836 2.942-.734 2.106-2.106a1.533 1.533 0 01.947-2.287c1.561-.379 1.561-2.6 0-2.978a1.532 1.532 0 01-.947-2.287c.836-1.372-.734-2.942-2.106-2.106a1.532 1.532 0 01-2.287-.947zM10 13a3 3 0 100-6 3 3 0 000 6z" />
                         </svg>
                         Settings
-                        <svg class="w-4 h-4 ml-auto transform transition-transform" fill="currentColor"
-                            viewBox="0 0 20 20" id="settingsArrow">
-                            <path fill-rule="evenodd"
-                                d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z"
-                                clip-rule="evenodd" />
+                        <svg class="w-4 h-4 ml-auto transform transition-transform" fill="currentColor" viewBox="0 0 20 20" id="settingsArrow">
+                            <path fill-rule="evenodd" d="M5.293 7.293a1 1 0 011.414 0L10 10.586l3.293-3.293a1 1 0 111.414 1.414l-4 4a1 1 0 01-1.414 0l-4-4a1 1 0 010-1.414z" clip-rule="evenodd" />
                         </svg>
                     </a>
                     <div class="settings-dropdown-content">
@@ -278,12 +220,9 @@
                         </div>
                         <form method="POST" action="{{ route('logout') }}">
                             @csrf
-                            <a href="{{ route('logout') }}" class="settings-dropdown-item text-red-600 hover:bg-red-50"
-                                onclick="event.preventDefault(); this.closest('form').submit();">
+                            <a href="{{ route('logout') }}" class="settings-dropdown-item text-red-600 hover:bg-red-50" onclick="event.preventDefault(); this.closest('form').submit();">
                                 <svg class="w-4 h-4 mr-2" fill="currentColor" viewBox="0 0 20 20">
-                                    <path fill-rule="evenodd"
-                                        d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z"
-                                        clip-rule="evenodd" />
+                                    <path fill-rule="evenodd" d="M3 3a1 1 0 00-1 1v12a1 1 0 102 0V4a1 1 0 00-1-1zm10.293 9.293a1 1 0 001.414 1.414l3-3a1 1 0 000-1.414l-3-3a1 1 0 10-1.414 1.414L14.586 9H7a1 1 0 100 2h7.586l-1.293 1.293z" clip-rule="evenodd" />
                                 </svg>
                                 {{ __('Log Out') }}
                             </a>
@@ -299,7 +238,7 @@
             <header class="bg-white/10 backdrop-blur-sm shadow-sm">
                 <div class="px-6 py-4">
                     <div class="flex items-center justify-between">
-                        <h1 class="text-2xl font-bold text-white">@yield('page-title', 'Admin Dashboard')</h1>
+                        <h1 class="text-2xl font-bold text-white">@yield('page-title', 'Super Admin Dashboard')</h1>
                         <div class="flex items-center space-x-4">
                             @yield('header-actions')
                         </div>
@@ -311,25 +250,25 @@
             <div class="p-6">
                 <!-- Flash Messages -->
                 @if (session('success'))
-                    <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
-                        <span class="block sm:inline">{{ session('success') }}</span>
-                    </div>
+                <div class="mb-4 bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative">
+                    <span class="block sm:inline">{{ session('success') }}</span>
+                </div>
                 @endif
 
                 @if (session('error'))
-                    <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                        <span class="block sm:inline">{{ session('error') }}</span>
-                    </div>
+                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                    <span class="block sm:inline">{{ session('error') }}</span>
+                </div>
                 @endif
 
                 @if ($errors->any())
-                    <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
-                        <ul>
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
-                    </div>
+                <div class="mb-4 bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative">
+                    <ul>
+                        @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                        @endforeach
+                    </ul>
+                </div>
                 @endif
 
                 <!-- Main Content -->

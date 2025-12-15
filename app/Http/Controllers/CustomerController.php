@@ -4,16 +4,20 @@ namespace App\Http\Controllers;
 
 use App\Models\Customer;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CustomerController extends Controller
 {
     public function index()
     {
-        $customers = Customer::latest()->paginate(15);
+        $user = Auth::user();
+        $companyId = $user->company_id;
+
+        $customers = Customer::where('company_id', $companyId)->latest()->paginate(15);
 
         // Statistik Customer
-        $totalCustomers = Customer::count();
-        $activeCustomers = Customer::has('invoices')->count(); // punya invoice
+        $totalCustomers = Customer::where('company_id', $companyId)->count();
+        $activeCustomers = Customer::where('company_id', $companyId)->has('invoices')->count(); 
         $inactiveCustomers = $totalCustomers - $activeCustomers;
 
         return view('customers.index', compact(
@@ -39,6 +43,8 @@ class CustomerController extends Controller
             'status' => 'required|in:active,inactive',
         ]);
 
+        $validated['company_id'] = Auth::user()->company_id;
+        
         $customer = Customer::create($validated);
 
         // Jika request dari AJAX (dari modal di invoice create)
@@ -46,13 +52,13 @@ class CustomerController extends Controller
             return response()->json([
                 'success' => true,
                 'customer' => $customer,
-                'message' => 'Customer berhasil dibuat!'
+                'message' => 'Pelanggan berhasil dibuat!'
             ], 201);
         }
 
         // Jika request biasa (dari halaman customer create)
-        return redirect()->route('customers.index')
-            ->with('success', 'Customer berhasil dibuat!');
+        return redirect()->route('admin.customers.index')
+            ->with('success', 'Pelanggan berhasil dibuat!');
     }
 
     public function show(Customer $customer)
@@ -82,12 +88,12 @@ class CustomerController extends Controller
             return response()->json([
                 'success' => true,
                 'customer' => $customer,
-                'message' => 'Customer berhasil diupdate!'
+                'message' => 'Pelanggan berhasil diperbarui!'
             ]);
         }
 
-        return redirect()->route('customers.index')
-            ->with('success', 'Customer berhasil diupdate!');
+        return redirect()->route('admin.customers.index')
+            ->with('success', 'Pelanggan berhasil diperbarui!');
     }
 
     public function destroy(Customer $customer)
@@ -98,11 +104,11 @@ class CustomerController extends Controller
         if (request()->expectsJson() || request()->ajax()) {
             return response()->json([
                 'success' => true,
-                'message' => 'Customer berhasil dihapus!'
+                'message' => 'Pelanggan berhasil dihapus!'
             ]);
         }
 
-        return redirect()->route('customers.index')
-            ->with('success', 'Customer berhasil dihapus!');
+        return redirect()->route('admin.customers.index')
+            ->with('success', 'Pelanggan berhasil dihapus!');
     }
 }

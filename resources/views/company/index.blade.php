@@ -1,8 +1,8 @@
-@extends('layouts.admin')
+@extends('layouts.superadmin')
 
-@section('title', 'Pelanggan')
+@section('title', 'Kelola Perusahaan')
 
-@section('page-title', 'Pelanggan')
+@section('page-title', 'Kelola Perusahaan')
 
 @section('content')
     <div class="px-4 sm:px-6 lg:px-8">
@@ -10,11 +10,11 @@
 
             <!-- Header -->
             <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-6 sm:mb-8 gap-4">
-                <h1 class="text-2xl sm:text-3xl font-bold text-white">Pelanggan</h1>
+                <h1 class="text-2xl sm:text-3xl font-bold text-white">Kelola Perusahaan</h1>
                 <div class="flex items-center gap-3 sm:gap-4 w-full sm:w-auto">
-                    <!-- Cari Box -->
+                    <!-- Search Box -->
                     <div class="relative flex-1 sm:flex-initial">
-                        <input type="text" id="searchInput" placeholder="Cari..."
+                        <input type="text" id="searchInput" placeholder="Search..."
                             class="w-full sm:w-80 px-4 py-2 sm:py-3 rounded-full bg-white border-0 focus:outline-none focus:ring-2 focus:ring-white/30 text-gray-700 placeholder-gray-400 text-sm sm:text-base">
                         <div class="absolute right-4 top-1/2 transform -translate-y-1/2">
                             <svg class="w-4 h-4 sm:w-5 sm:h-5 text-gray-400" fill="none" stroke="currentColor"
@@ -32,7 +32,7 @@
 
             <!-- Stats Cards -->
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6 mb-6 sm:mb-8">
-                <!-- Total Pelanggan -->
+                <!-- Total Kelola Perusahaan -->
                 <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-3 sm:mb-4">
                         <div
@@ -42,11 +42,11 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="text-2xl sm:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">{{ $totalCustomers }}</div>
-                    <div class="text-sm sm:text-base text-gray-600 font-medium">Total Pelanggan</div>
+                    <div class="text-2xl sm:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">{{ $totalCompany }}</div>
+                    <div class="text-sm sm:text-base text-gray-600 font-medium">Total Kelola Perusahaan</div>
                 </div>
 
-                <!-- Aktif Pelanggan -->
+                <!-- Active Kelola Perusahaan -->
                 <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg">
                     <div class="flex items-center justify-between mb-3 sm:mb-4">
                         <div
@@ -58,11 +58,11 @@
                             </svg>
                         </div>
                     </div>
-                    <div class="text-2xl sm:text-3xl font-bold text-green-600 mb-1 sm:mb-2">{{ $activeCustomers }}</div>
-                    <div class="text-sm sm:text-base text-gray-600 font-medium">Pelanggan Aktif</div>
+                    <div class="text-2xl sm:text-3xl font-bold text-green-600 mb-1 sm:mb-2">{{ $activeCompany }}</div>
+                    <div class="text-sm sm:text-base text-gray-600 font-medium">Active Kelola Perusahaan</div>
                 </div>
 
-                <!-- Average Pelanggan Value -->
+                <!-- Average Kelola Perusahaan Value -->
                 <div class="bg-white rounded-xl sm:rounded-2xl p-4 sm:p-6 shadow-lg sm:col-span-2 lg:col-span-1">
                     <div class="flex items-center justify-between mb-3 sm:mb-4">
                         <div
@@ -76,22 +76,22 @@
                     </div>
                     <div class="text-2xl sm:text-3xl font-bold text-blue-600 mb-1 sm:mb-2">
                         ${{ number_format($averageCustomerValue ?? 2450, 0) }}</div>
-                    <div class="text-sm sm:text-base text-gray-600 font-medium">Nilai Rata-rata Pelanggan</div>
+                    <div class="text-sm sm:text-base text-gray-600 font-medium">Avg. Kelola Perusahaan Value</div>
                 </div>
             </div>
 
-            <!-- Pelanggan Table Container -->
+            <!-- Kelola Perusahaan Table Container -->
             <div class="bg-white rounded-xl sm:rounded-2xl shadow-lg overflow-hidden">
 
                 <!-- Table Header with Add Button -->
                 <div class="p-4 sm:p-6 border-b border-gray-100">
-                    <button onclick="window.location.href='{{ route('admin.customers.create') }}'"
+                    <button onclick="window.location.href='{{ route('superadmin.company.create') }}'"
                         class="w-full sm:w-auto bg-blue-600 hover:bg-blue-700 text-white px-4 sm:px-6 py-2 sm:py-3 rounded-lg sm:rounded-xl font-medium transition-colors flex items-center justify-center gap-2 text-sm sm:text-base">
                         <svg class="w-4 h-4 sm:w-5 sm:h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
                                 d="M12 6v6m0 0v6m0-6h6m-6 0H6"></path>
                         </svg>
-                        Tambah Pelanggan Baru
+                        Add New Kelola Perusahaan
                     </button>
                 </div>
 
@@ -103,63 +103,59 @@
                 @endif
 
                 <!-- Container untuk table dan empty states -->
-                <div id="customerTableContainer">
+                <div id="companyTableContainer">
                     <!-- Desktop Table View -->
-                    <div class="hidden md:block overflow-x-auto" id="customerTable">
+                    <div class="hidden md:block overflow-x-auto" id="companyTable">
                         <table class="min-w-full">
                             <thead class="bg-gray-50">
                                 <tr>
-                                    <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Nama Pelanggan</th>
+                                    <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Kelola Perusahaan Name
+                                    </th>
                                     <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Email</th>
-                                    <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">No. Telp</th>
-                                    <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Alamat</th>
+                                    <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Phone</th>
+                                    <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Address</th>
                                     <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Status</th>
-                                    <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Total Order</th>
-                                    <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Aksi</th>
+                                    <th class="px-6 py-4 text-left text-sm font-medium text-gray-600">Action</th>
                                 </tr>
                             </thead>
-                            <tbody class="bg-white divide-y divide-gray-100" id="customerTableBody">
-                                @forelse($customers as $index => $customer)
-                                    <tr class="hover:bg-gray-50 transition duration-150 customer-row"
-                                        data-name="{{ strtolower($customer->name) }}"
-                                        data-email="{{ strtolower($customer->email) }}" data-phone="{{ $customer->phone }}"
-                                        data-address="{{ strtolower($customer->address) }}"
+                            <tbody class="bg-white divide-y divide-gray-100" id="companyTableBody">
+                                @forelse($company as $index => $c)
+                                    <tr class="hover:bg-gray-50 transition duration-150 company-row"
+                                        data-name="{{ strtolower($c->company_name) }}"
+                                        data-email="{{ strtolower($c->email) }}" data-phone="{{ $c->phone }}"
+                                        data-address="{{ strtolower($c->address) }}"
                                         style="{{ $index >= 10 ? 'display: none;' : '' }}"
                                         data-page="{{ floor($index / 10) + 1 }}">
                                         <td class="px-6 py-4">
-                                            <div class="text-sm font-medium text-gray-900">{{ $customer->name }}</div>
+                                            <div class="text-sm font-medium text-gray-900">{{ $c->company_name }}</div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-600">{{ $customer->email }}</div>
+                                            <div class="text-sm text-gray-600">{{ $c->email }}</div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-900">{{ $customer->phone }}</div>
+                                            <div class="text-sm text-gray-900">{{ $c->phone }}</div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-900 max-w-xs truncate">{{ $customer->address }}
-                                            </div>
+                                            <div class="text-sm text-gray-900 max-w-xs truncate">{{ $c->address }}</div>
                                         </td>
                                         <td class="px-6 py-4">
-                                            @if ($customer->status == 'active' || $customer->orders_count > 0)
+                                            @if ($c->aktif == 1)
                                                 <span
                                                     class="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-green-500 text-white">
-                                                    Aktif
+                                                    Active
                                                 </span>
                                             @else
                                                 <span
                                                     class="inline-flex px-3 py-1 text-xs font-semibold rounded-full bg-gray-400 text-white">
-                                                    Tidak Aktif
+                                                    Inactive
                                                 </span>
                                             @endif
                                         </td>
                                         <td class="px-6 py-4">
-                                            <div class="text-sm text-gray-900">{{ $customer->orders_count ?? 0 }}</div>
-                                        </td>
-                                        <td class="px-6 py-4">
                                             <div class="flex space-x-2">
-                                                <a href="{{ route('admin.customers.edit', $customer) }}"
+                                                <a href="{{ route('superadmin.company.edit', $c) }}"
                                                     class="w-8 h-8 bg-orange-500 hover:bg-orange-600 rounded-lg flex items-center justify-center transition-colors"
-                                                    title="Edit Pelanggan">
+                                                    title="Edit Kelola Perusahaan">
                                                     <svg class="w-3 h-3 text-white" fill="none" stroke="currentColor"
                                                         viewBox="0 0 24 24">
                                                         <path stroke-linecap="round" stroke-linejoin="round"
@@ -167,14 +163,14 @@
                                                             d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z">
                                                         </path>
                                                 </a>
-                                                <form action="{{ route('admin.customers.destroy', $customer) }}"
+                                                <form action="{{ route('superadmin.company.destroy', $c) }}"
                                                     method="POST" class="inline"
-                                                    onsubmit="return confirm('Yakin ingin hapus customer {{ $customer->name }}?')">
+                                                    onsubmit="return confirm('Yakin ingin hapus company {{ $c->company_name }}?')">
                                                     @csrf
                                                     @method('DELETE')
                                                     <button type="submit"
                                                         class="w-8 h-8 text-white bg-red-500 hover:bg-red-600 rounded-lg flex items-center justify-center transition-colors"
-                                                        title="Hapus Pelanggan">
+                                                        title="Hapus Kelola Perusahaan">
                                                         <svg class="w-3 h-3" fill="none" stroke="currentColor"
                                                             viewBox="0 0 24 24">
                                                             <path stroke-linecap="round" stroke-linejoin="round"
@@ -187,16 +183,17 @@
                                         </td>
                                     </tr>
                                 @empty
-                                    <!-- Empty state ketika tidak ada customer sama sekali -->
-                                    <tr id="noCustomersRow">
+                                    <!-- Empty state ketika tidak ada company sama sekali -->
+                                    <tr id="noCompanyRow">
                                         <td colspan="7" class="px-6 py-16 text-center">
                                             <div class="flex flex-col items-center justify-center">
                                                 <div class="text-6xl mb-4">👥</div>
-                                                <h3 class="text-lg font-medium text-gray-900 mb-2">Belum Ada Pelanggan</h3>
-                                                <p class="text-gray-500 mb-6">Mulai tambahkan customer pertama Anda</p>
-                                                <a href="{{ route('admin.admin.customers.create') }}"
+                                                <h3 class="text-lg font-medium text-gray-900 mb-2">Belum Ada Kelola
+                                                    Perusahaan</h3>
+                                                <p class="text-gray-500 mb-6">Mulai tambahkan company pertama Anda</p>
+                                                <a href="{{ route('superadmin.company.create') }}"
                                                     class="bg-blue-500 hover:bg-blue-600 text-white px-6 py-2 rounded-lg flex items-center gap-2 transition duration-200">
-                                                    ➕ Tambah Pelanggan Pertama
+                                                    ➕ Tambah Kelola Perusahaan Pertama
                                                 </a>
                                             </div>
                                         </td>
@@ -207,63 +204,62 @@
                     </div>
 
                     <!-- Mobile Card View -->
-                    <div class="md:hidden" id="customerCards">
+                    <div class="md:hidden" id="companyCards">
                         <div id="mobileCustomerList" class="divide-y divide-gray-100">
-                            @forelse($customers as $index => $customer)
-                                <div class="p-4 customer-card hover:bg-gray-50 transition duration-150"
-                                    data-name="{{ strtolower($customer->name) }}"
-                                    data-email="{{ strtolower($customer->email) }}" data-phone="{{ $customer->phone }}"
-                                    data-address="{{ strtolower($customer->address) }}"
+                            @forelse($company as $index => $c)
+                                <div class="p-4 company-card hover:bg-gray-50 transition duration-150"
+                                    data-name="{{ strtolower($c->company_name) }}"
+                                    data-email="{{ strtolower($c->email) }}" data-phone="{{ $c->phone }}"
+                                    data-address="{{ strtolower($c->address) }}"
                                     style="{{ $index >= 10 ? 'display: none;' : '' }}"
                                     data-page="{{ floor($index / 10) + 1 }}">
 
-                                    <!-- Pelanggan Header -->
+                                    <!-- Kelola Perusahaan Header -->
                                     <div class="flex justify-between items-start mb-3">
                                         <div class="flex-1">
-                                            <h3 class="font-semibold text-gray-900 text-base mb-1">{{ $customer->name }}
+                                            <h3 class="font-semibold text-gray-900 text-base mb-1">{{ $c->company_name }}
                                             </h3>
-                                            <p class="text-sm text-gray-600">{{ $customer->email }}</p>
+                                            <p class="text-sm text-gray-600">{{ $c->email }}</p>
                                         </div>
-                                        @if ($customer->status == 'active' || $customer->orders_count > 0)
+                                        @if ($c->aktif == 1)
                                             <span
                                                 class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-green-500 text-white">
-                                                Aktif
+                                                Active
                                             </span>
                                         @else
                                             <span
                                                 class="inline-flex px-2 py-1 text-xs font-semibold rounded-full bg-gray-400 text-white">
-                                                Tidak Aktif
+                                                Inactive
                                             </span>
                                         @endif
                                     </div>
 
-                                    <!-- Pelanggan Details -->
+                                    <!-- Kelola Perusahaan Details -->
                                     <div class="space-y-2 mb-3">
                                         <div class="flex items-start text-sm">
                                             <span class="text-gray-500 w-20 flex-shrink-0">Phone:</span>
-                                            <span class="text-gray-900 font-medium">{{ $customer->phone }}</span>
+                                            <span class="text-gray-900 font-medium">{{ $c->phone }}</span>
                                         </div>
                                         <div class="flex items-start text-sm">
                                             <span class="text-gray-500 w-20 flex-shrink-0">Address:</span>
-                                            <span class="text-gray-900">{{ $customer->address }}</span>
+                                            <span class="text-gray-900">{{ $c->address }}</span>
                                         </div>
                                         <div class="flex items-start text-sm">
                                             <span class="text-gray-500 w-20 flex-shrink-0">Orders:</span>
-                                            <span
-                                                class="text-gray-900 font-medium">{{ $customer->orders_count ?? 0 }}</span>
+                                            <span class="text-gray-900 font-medium">{{ $c->orders_count ?? 0 }}</span>
                                         </div>
                                     </div>
 
                                     <!-- Action Buttons -->
                                     <div class="flex gap-2 pt-3 border-t border-gray-100">
-                                        <a href="{{ route('admin.customers.edit', $customer) }}"
+                                        <a href="{{ route('superadmin.company.edit', $c) }}"
                                             class="flex-1 bg-orange-500 hover:bg-orange-600 text-white py-2 px-4 rounded-lg flex items-center justify-center gap-2 transition-colors text-sm font-medium">
                                             <span>✏️</span>
                                             <span>Edit</span>
                                         </a>
-                                        <form action="{{ route('admin.customers.destroy', $customer) }}" method="POST"
+                                        <form action="{{ route('superadmin.company.destroy', $c) }}" method="POST"
                                             class="flex-1"
-                                            onsubmit="return confirm('Yakin ingin hapus customer {{ $customer->name }}?')">
+                                            onsubmit="return confirm('Yakin ingin hapus company {{ $c->company_name }}?')">
                                             @csrf
                                             @method('DELETE')
                                             <button type="submit"
@@ -276,14 +272,15 @@
                                 </div>
                             @empty
                                 <!-- Mobile Empty State -->
-                                <div id="noCustomersMobile" class="px-4 py-12 text-center">
+                                <div id="noCompanyMobile" class="px-4 py-12 text-center">
                                     <div class="flex flex-col items-center justify-center">
                                         <div class="text-5xl mb-3">👥</div>
-                                        <h3 class="text-base font-medium text-gray-900 mb-2">Belum Ada Pelanggan</h3>
-                                        <p class="text-sm text-gray-500 mb-4">Mulai tambahkan customer pertama Anda</p>
-                                        <a href="{{ route('admin.customers.create') }}"
+                                        <h3 class="text-base font-medium text-gray-900 mb-2">Belum Ada Kelola Perusahaan
+                                        </h3>
+                                        <p class="text-sm text-gray-500 mb-4">Mulai tambahkan company pertama Anda</p>
+                                        <a href="{{ route('superadmin.company.create') }}"
                                             class="bg-blue-500 hover:bg-blue-600 text-white px-5 py-2 rounded-lg flex items-center gap-2 transition duration-200 text-sm">
-                                            ➕ Tambah Pelanggan Pertama
+                                            ➕ Tambah Kelola Perusahaan Pertama
                                         </a>
                                     </div>
                                 </div>
@@ -291,22 +288,23 @@
                         </div>
                     </div>
 
-                    <!-- Cari Not Found State -->
+                    <!-- Search Not Found State -->
                     <div id="searchNotFound" class="hidden text-center py-12 sm:py-16 px-4">
                         <div class="flex flex-col items-center justify-center">
                             <div class="text-5xl sm:text-6xl mb-3 sm:mb-4">🔍</div>
                             <h3 class="text-base sm:text-lg font-medium text-gray-900 mb-2">Tidak Ditemukan</h3>
-                            <p class="text-sm sm:text-base text-gray-500 mb-4">Pelanggan yang Anda cari tidak ditemukan</p>
+                            <p class="text-sm sm:text-base text-gray-500 mb-4">Kelola Perusahaan yang Anda cari tidak
+                                ditemukan</p>
                             <button onclick="clearSearch()"
                                 class="text-blue-500 hover:text-blue-700 font-medium text-sm sm:text-base">
-                                🔄 Tampilkan Semua Pelanggan
+                                🔄 Tampilkan Semua Kelola Perusahaan
                             </button>
                         </div>
                     </div>
                 </div>
 
                 <!-- Pagination -->
-                @if ($customers->count() > 10)
+                @if ($company->count() > 10)
                     <div class="px-4 sm:px-6 py-3 sm:py-4 bg-gray-50 border-t border-gray-100" id="paginationContainer">
                         <div class="flex items-center justify-center space-x-1 sm:space-x-2">
                             <button id="prevBtn"
@@ -334,22 +332,22 @@
     <script>
         document.addEventListener('DOMContentLoaded', function() {
             const searchInput = document.getElementById('searchInput');
-            const customerRows = document.querySelectorAll('.customer-row');
-            const customerCards = document.querySelectorAll('.customer-card');
-            const customerTable = document.getElementById('customerTable');
+            const companyRows = document.querySelectorAll('.company-row');
+            const companyCards = document.querySelectorAll('.company-card');
+            const companyTable = document.getElementById('companyTable');
             const mobileCustomerList = document.getElementById('mobileCustomerList');
             const searchNotFound = document.getElementById('searchNotFound');
-            const noCustomersRow = document.getElementById('noCustomersRow');
+            const noCompanyRow = document.getElementById('noCompanyRow');
             const paginationContainer = document.getElementById('paginationContainer');
 
             let currentPage = 1;
             const itemsPerPage = 10;
-            let filteredRows = Array.from(customerRows);
-            let filteredCards = Array.from(customerCards);
+            let filteredRows = Array.from(companyRows);
+            let filteredCards = Array.from(companyCards);
 
             // Initialize pagination
             function initPagination() {
-                if (customerRows.length <= itemsPerPage) {
+                if (companyRows.length <= itemsPerPage) {
                     if (paginationContainer) paginationContainer.style.display = 'none';
                     return;
                 }
@@ -429,16 +427,16 @@
                 }
             };
 
-            // Cari function
+            // Search function
             function performSearch() {
                 const searchTerm = searchInput.value.toLowerCase().trim();
 
                 // Reset filtered rows and cards
                 if (searchTerm === '') {
-                    filteredRows = Array.from(customerRows);
-                    filteredCards = Array.from(customerCards);
+                    filteredRows = Array.from(companyRows);
+                    filteredCards = Array.from(companyCards);
                 } else {
-                    filteredRows = Array.from(customerRows).filter(row => {
+                    filteredRows = Array.from(companyRows).filter(row => {
                         const name = row.dataset.name || '';
                         const email = row.dataset.email || '';
                         const phone = row.dataset.phone || '';
@@ -450,7 +448,7 @@
                             address.includes(searchTerm);
                     });
 
-                    filteredCards = Array.from(customerCards).filter(card => {
+                    filteredCards = Array.from(companyCards).filter(card => {
                         const name = card.dataset.name || '';
                         const email = card.dataset.email || '';
                         const phone = card.dataset.phone || '';
@@ -464,13 +462,13 @@
                 }
 
                 // Show results
-                if (filteredRows.length === 0 && customerRows.length > 0) {
-                    if (customerTable) customerTable.style.display = 'none';
+                if (filteredRows.length === 0 && companyRows.length > 0) {
+                    if (companyTable) companyTable.style.display = 'none';
                     if (mobileCustomerList) mobileCustomerList.style.display = 'none';
                     searchNotFound.style.display = 'block';
                     if (paginationContainer) paginationContainer.style.display = 'none';
                 } else {
-                    if (customerTable) customerTable.style.display = '';
+                    if (companyTable) companyTable.style.display = '';
                     if (mobileCustomerList) mobileCustomerList.style.display = '';
                     searchNotFound.style.display = 'none';
                     currentPage = 1;
@@ -481,9 +479,9 @@
             // Clear search function
             window.clearSearch = function() {
                 searchInput.value = '';
-                filteredRows = Array.from(customerRows);
-                filteredCards = Array.from(customerCards);
-                if (customerTable) customerTable.style.display = '';
+                filteredRows = Array.from(companyRows);
+                filteredCards = Array.from(companyCards);
+                if (companyTable) companyTable.style.display = '';
                 if (mobileCustomerList) mobileCustomerList.style.display = '';
                 searchNotFound.style.display = 'none';
                 currentPage = 1;

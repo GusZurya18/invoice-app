@@ -1,26 +1,45 @@
 <?php
+
 namespace App\Http\Controllers;
 
 use App\Models\Invoice;
-use App\Models\InvoiceItem;
-use App\Models\Customer;
 use App\Models\Product;
-use App\Models\CompanySetting;
+use App\Models\Customer;
+use App\Models\InvoiceItem;
 use Illuminate\Http\Request;
+use App\Models\CompanySetting;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Auth;
 
 class InvoiceController extends Controller
 {
-    public function index() {
-        $invoices = Invoice::latest()->paginate(15);
+    public function index()
+    {
+        $user = Auth::user()->id;
 
-        $totalInvoices = Invoice::count();
-        $paidInvoices = Invoice::where('status', 'paid')->count();
-        $unpaidInvoices = Invoice::where('status', 'draft')
-        ->orWhere('paid_status','overdue')->count();
-        $pendingInvoices = Invoice::where('status', 'pending')->count();
+        $query = Invoice::where('admin_id', $user);
+
+        $invoices = Invoice::where('admin_id', $user)
+            ->latest()
+            ->paginate(15);
+
+        $invoices = $query->latest()->paginate(15);
+
+        $totalInvoices = (clone $query)->count();
+        $paidInvoices = (clone $query)
+            ->where('status', 'paid')
+            ->count();
+        $unpaidInvoices = (clone $query)
+            ->where(function ($q) {
+                $q->where('status', 'draft')
+                    ->orWhere('paid_status', 'overdue');
+            })
+            ->count();
+        $pendingInvoices = (clone $query)
+            ->where('status', 'pending')
+            ->count();
 
         return view('invoices.index', compact(
             'invoices',
@@ -31,22 +50,29 @@ class InvoiceController extends Controller
         ));
     }
 
-public function create() {
-        $customers = Customer::all();
-        $products = Product::all();
+    public function create()
+    {
+        $companyId = Auth::user()->company_id;
+
+        $customers = Customer::where('company_id', $companyId)->get();
+        $products = Product::whereHas('category', function ($query) use ($companyId) {
+            $query->where('company_id', $companyId);
+        })->get();
         $company = CompanySetting::current(); // TAMBAHAN
-        
+
         return view('invoices.create', compact('customers', 'products', 'company')); // UPDATED
     }
 
-    public function show(Invoice $invoice, Request $request) {
+    public function show(Invoice $invoice, Request $request)
+    {
         $lang = $request->get('lang', 'id');
         app()->setLocale($lang);
 
         return view('invoices.show', compact('invoice'));
     }
 
-    public function store(Request $request) {
+    public function store(Request $request)
+    {
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'status' => 'required',
@@ -63,16 +89,17 @@ public function create() {
             // Ambil tax rate: dari input atau default company
             $company = CompanySetting::current();
             $taxRate = $request->filled('tax_rate') ? $request->tax_rate : $company->tax_rate;
-            
+
             $invoice = Invoice::create([
                 'code' => 'INV' . time(),
+                'company_id' => Auth::user()->company_id,
                 'customer_id' => $request->customer_id,
                 'status' => $request->status,
                 'notes' => $request->notes,
                 'discount_percent' => $request->discount_percent ?? 0,
                 'tax_rate' => $taxRate, // TAMBAHAN
-                'payment_proof' => $request->hasFile('payment_proof') 
-                    ? $request->file('payment_proof')->store('payments', 'public') 
+                'payment_proof' => $request->hasFile('payment_proof')
+                    ? $request->file('payment_proof')->store('payments', 'public')
                     : null,
                 'start_date' => $request->start_date,
                 'due_date' => $request->due_date,
@@ -81,7 +108,7 @@ public function create() {
 
             $subtotal = 0;
 
-            foreach($request->items as $item){
+            foreach ($request->items as $item) {
                 $product = Product::lockForUpdate()->find($item['product_id']);
                 $lineTotal = $product->price * $item['quantity'];
 
@@ -110,9 +137,9 @@ public function create() {
             // Hitung total dengan diskon dan pajak
             $discount = ($request->discount_percent ?? 0) * $subtotal / 100;
             $subtotalAfterDiscount = $subtotal - $discount;
-            
+
             $taxAmount = $subtotalAfterDiscount * ($taxRate / 100);
-            
+
             $grandTotal = $subtotalAfterDiscount + $taxAmount;
 
             $invoice->update([
@@ -120,18 +147,20 @@ public function create() {
             ]);
         });
 
-        return redirect()->route('invoices.index')->with('success','Invoice berhasil dibuat');
+        return redirect()->route('invoices.index')->with('success', 'Invoice berhasil dibuat');
     }
 
-    public function edit(Invoice $invoice) {
+    public function edit(Invoice $invoice)
+    {
         $customers = Customer::all();
         $products = Product::all();
         $company = CompanySetting::current(); // TAMBAHAN
-        
+
         return view('invoices.edit', compact('invoice', 'customers', 'products', 'company')); // UPDATED
     }
 
-    public function update(Request $request, Invoice $invoice) {
+    public function update(Request $request, Invoice $invoice)
+    {
         $request->validate([
             'customer_id' => 'required|exists:customers,id',
             'status' => 'required',
@@ -147,7 +176,7 @@ public function create() {
 
             // rollback stok kalau sebelumnya paid
             if ($oldStatus === 'paid') {
-                foreach($invoice->items as $oldItem){
+                foreach ($invoice->items as $oldItem) {
                     $product = Product::lockForUpdate()->find($oldItem->product_id);
                     if ($product) {
                         $product->increment('stock', $oldItem->quantity);
@@ -168,8 +197,8 @@ public function create() {
                 'notes' => $request->notes,
                 'discount_percent' => $request->discount_percent ?? 0,
                 'tax_rate' => $taxRate, // TAMBAHAN
-                'payment_proof' => $request->hasFile('payment_proof') 
-                    ? $request->file('payment_proof')->store('payments', 'public') 
+                'payment_proof' => $request->hasFile('payment_proof')
+                    ? $request->file('payment_proof')->store('payments', 'public')
                     : $invoice->payment_proof,
                 'start_date' => $request->start_date,
                 'due_date' => $request->due_date,
@@ -181,7 +210,7 @@ public function create() {
 
             $subtotal = 0;
 
-            foreach($request->items as $item){
+            foreach ($request->items as $item) {
                 $product = Product::lockForUpdate()->find($item['product_id']);
                 $lineTotal = $product->price * $item['quantity'];
 
@@ -217,13 +246,14 @@ public function create() {
             ]);
         });
 
-        return redirect()->route('invoices.index')->with('success','Invoice berhasil diupdate');
+        return redirect()->route('invoices.index')->with('success', 'Invoice berhasil diupdate');
     }
 
-    public function destroy(Invoice $invoice){
+    public function destroy(Invoice $invoice)
+    {
         DB::transaction(function () use ($invoice) {
             if ($invoice->status === 'paid') {
-                foreach($invoice->items as $item){
+                foreach ($invoice->items as $item) {
                     $product = Product::lockForUpdate()->find($item->product_id);
                     if ($product) {
                         $product->increment('stock', $item->quantity);
@@ -236,14 +266,14 @@ public function create() {
             $invoice->delete();
         });
 
-        return back()->with('success','Invoice berhasil dihapus');
+        return back()->with('success', 'Invoice berhasil dihapus');
     }
 
     public function pdf(Invoice $invoice, Request $request)
     {
         $lang = $request->get('lang', 'id');
         app()->setLocale($lang);
-        
+
         $pdf = Pdf::loadView('invoices.invoice_pdf', compact('invoice'));
         return $pdf->download($invoice->code . '_' . $lang . '.pdf');
     }
@@ -264,7 +294,7 @@ public function create() {
         // Validasi semua ID ada di database
         $existingInvoices = Invoice::whereIn('id', $invoiceIds)->pluck('id')->toArray();
         $invalidIds = array_diff($invoiceIds, $existingInvoices);
-        
+
         if (!empty($invalidIds)) {
             return redirect()->back()->with('error', 'Beberapa invoice tidak ditemukan.');
         }
@@ -276,7 +306,7 @@ public function create() {
                 foreach ($invoices as $invoice) {
                     // Restore stok jika invoice sudah dibayar
                     if ($invoice->status === 'paid') {
-                        foreach($invoice->items as $item){
+                        foreach ($invoice->items as $item) {
                             $product = Product::lockForUpdate()->find($item->product_id);
                             if ($product) {
                                 $product->increment('stock', $item->quantity);
@@ -295,7 +325,6 @@ public function create() {
 
             $count = count($invoiceIds);
             return redirect()->back()->with('success', "{$count} invoice berhasil dihapus.");
-
         } catch (\Exception $e) {
             Log::error('Bulk delete error: ' . $e->getMessage());
             return redirect()->back()->with('error', 'Gagal menghapus invoice: ' . $e->getMessage());
