@@ -9,15 +9,18 @@ class Customer extends Model
 {
     use HasFactory;
 
-    protected $fillable = [
-        'name',
-        'email',
-        'phone',
-        'address',
-    ];
+    public $table = 'customers';
+
+    protected $guarded = ['id'];
 
     public function invoices()
     {
         return $this->hasMany(Invoice::class);
     }
+
+    public function getOrdersCountAttribute()
+    {
+        return $this->invoices()->count();
+    }
+    
 }

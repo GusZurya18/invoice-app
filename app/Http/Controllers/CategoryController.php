@@ -4,27 +4,27 @@ namespace App\Http\Controllers;
 
 use App\Models\Category;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Auth;
 
 class CategoryController extends Controller
 {
     public function index()
     {
+        $user = Auth::user();
+        $companyId = $user->company_id;
 
-        $categories = Category::withCount('products')->get();
+        $categories = Category::where('company_id', $companyId)->withCount('products')->get();
 
         $totalCategories = $categories->count();
         $categoryWithMostProducts = $categories->sortByDesc('products_count')->first();
         $emptyCategories = $categories->where('products_count', 0)->count();
 
-    return view('categories.index', compact(
-        'categories',
-        'totalCategories',
-        'categoryWithMostProducts',
-        'emptyCategories'
-    ));
-
-        $categories = Category::latest()->get();
-        return view('categories.index', compact('categories'));
+        return view('categories.index', compact(
+            'categories',
+            'totalCategories',
+            'categoryWithMostProducts',
+            'emptyCategories'
+        ));
     }
 
     public function create()
@@ -39,9 +39,15 @@ class CategoryController extends Controller
             'description' => 'nullable',
         ]);
 
-        Category::create($request->all());
+        Category::create([
+            'name'        => $request->name,
+            'description' => $request->description,
+            'company_id'  => Auth::user()->company_id,
+        ]);
 
-        return redirect()->route('categories.index')->with('success','Category berhasil dibuat!');
+        return redirect()
+            ->route('admin.categories.index')
+            ->with('success', 'Category berhasil dibuat!');
     }
 
     public function edit(Category $category)
@@ -58,14 +64,12 @@ class CategoryController extends Controller
 
         $category->update($request->all());
 
-        return redirect()->route('categories.index')->with('success','Category berhasil diupdate!');
+        return redirect()->route('admin.categories.index')->with('success', 'Category berhasil diupdate!');
     }
 
     public function destroy(Category $category)
     {
         $category->delete();
-        return redirect()->route('categories.index')->with('success','Category berhasil dihapus!');
+        return redirect()->route('admin.categories.index')->with('success', 'Category berhasil dihapus!');
     }
-
-    
 }

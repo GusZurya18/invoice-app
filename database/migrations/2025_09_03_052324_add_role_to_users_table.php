@@ -10,19 +10,17 @@ return new class extends Migration
      * Run the migrations.
      */
     public function up(): void
-    {
-        Schema::table('users', function (Blueprint $table) {
-        $table->string('role')->default('user'); // 'admin' atau 'user'
-        });
-    }
+{
+    Schema::table('users', function (Blueprint $table) {
+        $table->string('role')->default('user'); // default biar semua user baru jadi 'user'
+    });
+}
 
-    /**
-     * Reverse the migrations.
-     */
-    public function down(): void
-    {
-        Schema::table('users', function (Blueprint $table) {
-            //
-        });
-    }
+public function down(): void
+{
+    Schema::table('users', function (Blueprint $table) {
+        $table->dropColumn('role');
+    });
+}
+
 };

@@ -13,6 +13,7 @@ return new class extends Migration
         $table->string('code')->unique();
         $table->foreignId('customer_id')->constrained()->onDelete('cascade');
         $table->enum('status',['draft','pending','paid','cancelled'])->default('pending');
+        $table->decimal('total_amount', 15, 2)->default(0);
         $table->decimal('discount_percent',5,2)->default(0);
         $table->text('notes')->nullable();
         $table->string('payment_proof')->nullable();
