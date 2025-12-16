@@ -1,0 +1,36 @@
+name: 🚀 Deploy website on push
+on:
+  push:
+    branches: [ main ]
+jobs:
+  web-deploy:
+    name: 🎉 Deploy
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@main
+
+      - name: Setup node js
+        uses: actions/setup-node@master
+        with:
+          node-version: '20'
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Copy .env
+        run: cp .env.example .env
+
+      - name: Build dependencies
+        run: npm run build
+
+      - name: List output files
+        run: find ./dist/ -print
+
+      - name: 📂 Sync files
+        uses: SamKirkland/FTP-Deploy-Action@4.2.0
+        with:
+          server: ${{ secrets.FTP_SERVER }}
+          username: ${{ secrets.FTP_USERNAME }}
+          password: ${{ secrets.FTP_PASSWORD }}
+          local-dir: ./dist/
