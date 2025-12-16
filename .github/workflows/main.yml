@@ -24,9 +24,6 @@ jobs:
       - name: Build dependencies
         run: npm run build
 
-      - name: List output files
-        run: find ./dist/ -print
-
       - name: 📂 Sync files
         uses: SamKirkland/FTP-Deploy-Action@4.2.0
         with:
